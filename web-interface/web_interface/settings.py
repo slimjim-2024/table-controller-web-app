@@ -16,20 +16,26 @@ import posixpath
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+DB_HOST = os.environ.get("DB_HOST", "db")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '7f3f9027-17cf-4c21-a5e8-c0b417e581a5'
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+# Original key : 7f3f9027-17cf-4c21-a5e8-c0b417e581a5
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", default=1))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","*").split(",")
 
 # Application references
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
 INSTALLED_APPS = [
+    'app',
     # Add your apps here to enable them
     'django.contrib.admin',
     'django.contrib.auth',
@@ -58,7 +64,7 @@ ROOT_URLCONF = 'web_interface.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'app','templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,8 +83,11 @@ WSGI_APPLICATION = 'web_interface.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': DB_HOST,
+        'PORT':3306,
+        'PASSWORD':'rootpassword',
+        'USER':'root'
     }
 }
 
@@ -109,5 +118,5 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-STATIC_URL = '/static/'
-STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'app','static')
