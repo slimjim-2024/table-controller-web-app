@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>IS THIS FUCKING WORKING?????</h1>
-    <img src="{% static 'app/content/fish.gif' %}" alt="fish">
-</body>
-</html>
+{% extends "app/layout.html" %}
+
+
+{% block content %}
+{% load static %}
+
+
+<h1>IS THIS FUCKING WORKING?????</h1>
+<img src="{% static 'app/content/fish.gif' %}" alt="fish">
+
+{% endblock %}

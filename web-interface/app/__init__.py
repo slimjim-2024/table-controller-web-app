@@ -1,3 +1,3 @@
 """
-Package for web_interface.
+Package for the application.
 """
