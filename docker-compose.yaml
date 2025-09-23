@@ -1,0 +1,34 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/db_data:/var/lib/mysql
+
+  web:
+    build: ./web-interface
+    container_name: django-web
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DEBUG: 0
+      DB_NAME: mydb
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 3306
+      SECRET_KEY: 7f3f9027-17cf-4c21-a5e8-c0b417e581a5
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && /app/env/scripts/activate && daphne -b 0.0.0.0 -p 8000 web_interface.asgi:application"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./web-interface:/app
