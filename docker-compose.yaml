@@ -12,6 +12,18 @@ services:
       - "3306:3306"
     volumes:
       - ./database/db_data:/var/lib/mysql
+      
+  nginx:
+    build: ./web-interface/nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./web-interface/app/static/app/files:/usr/share/nginx/static/
+    depends_on:
+      - web
+      - db
 
   web:
     build: ./web-interface
