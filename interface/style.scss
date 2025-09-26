@@ -1,17 +1,23 @@
 body {
-    background-color:cyan;
+    background-color: green;
+    font-family: Gill Sans, sans-serif;
+    margin: 0;
+    padding: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     height: 100vh;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.grid {
-    display: grid;
+.topbar {
+    background-color: blue;
+    position: absolute;
 }
 
 .login {
-    height: 100px;
+    background-color: red;
+    display: grid;
 }
 
 .textInput {
