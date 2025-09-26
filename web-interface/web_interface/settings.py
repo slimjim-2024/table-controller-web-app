@@ -36,6 +36,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","*").split(",")
 INSTALLED_APPS = [
     'app',
     # Add your apps here to enable them
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -77,6 +78,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'web_interface.wsgi.application'
+ASGI_APPLICATION = "web_interface.asgi.application"
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 DATABASES = {
@@ -116,5 +119,5 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-STATIC_URL = '../app/static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))

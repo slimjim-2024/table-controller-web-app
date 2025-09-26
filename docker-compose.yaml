@@ -20,7 +20,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./web-interface/app/static/app/files:/usr/share/nginx/static/
+      - ./web-interface/app/static/:/usr/share/nginx/static/
     depends_on:
       - web
       - db
@@ -39,7 +39,8 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       SECRET_KEY: 7f3f9027-17cf-4c21-a5e8-c0b417e581a5
-    command: sh -c "pip install --no-cache-dir -r requirements.txt && /app/env/scripts/activate && daphne -b 0.0.0.0 -p 8000 web_interface.asgi:application"
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python manage.py runserver 0.0.0.0:8000"
+    #command: sh -c "pip install --no-cache-dir -r requirements.txt && daphne -b 0.0.0.0 -p 8000 web_interface.asgi:application"
     ports:
       - "8000:8000"
     volumes:
