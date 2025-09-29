@@ -1,6 +1,9 @@
+$linakBlue: #1961ac;
+
 body {
-    background-color: green;
-    font-family: Gill Sans, sans-serif;
+    background-color: white;
+    color: black;
+    font-family: Montserrat,"Helvetica Neue", Helvetica, Arial, sans-serif; /* Linak font */
     margin: 0;
     padding: 0;
     display: flex;
@@ -10,16 +13,50 @@ body {
     height: 100vh;
 }
 
-.topbar {
-    background-color: blue;
-    position: absolute;
+button {
+    border: none;
+    background-color: lightgrey;
+    padding: 1px 1rem;
 }
 
-.login {
-    background-color: red;
+.clear {
+    background-color: transparent;
+    color: inherit;
+    box-shadow: none;
+}
+
+header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.blue {
+    background-color: $linakBlue;
+}
+
+.warning {
+    color: red;
+    visibility: hidden;
+}
+
+form {
+    background-color: lightgray;
+    padding: 1rem;
+    box-shadow: 0 4px 6px 2px black;
+}
+
+.grid {
     display: grid;
 }
 
-.textInput {
-    color:pink;
+.darkMode {
+    background-color: #121212;
+    color: white;
 }

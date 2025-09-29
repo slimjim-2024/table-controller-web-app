@@ -8,16 +8,23 @@
     <source>
 </head>
 <body>
-    <div class="topbar">
+    <header class="blue">
         <h1>Table CTRL</h1>
-    </div>
+    </header>
     <main>
-        <div class="loginDiv">
-            <h1>Login Screen</h1>
+        <div>
+            <button id="loginBtn">Login</button>
+            <button id="SignupBtn" class="clear">Signup</button>
+        </div>
+        <form class="grid">  
             <input name="username" class="textInput" placeholder="Username">
             <input name="password" class="textInput" placeholder="Password">
-            <button>Login</button>
-        </div>
+            <span class="warning">Wrong username or password.</span>
+            <input type="submit" class="blue" value="Continue">
+        </form>
     </main>
+    <footer class="blue">
+        <p>© 3AM Vibe Coders. All rights reserved.</p>
+    </footer>
 </body>
 </html>
