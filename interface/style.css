@@ -1,12 +1,27 @@
 body {
-  background-color: cyan;
-  display: flex;
-  justify-content: center;
-  height: 100vh;
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-family: Gill Sans, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-.grid {
+main {
+  background-color: green;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.topbar {
+  background-color: blue;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.loginDiv {
+  background-color: red;
   display: grid;
 }
 
@@ -17,4 +32,4 @@ body {
 
 .textInput {
   color: pink;
-}/*# sourceMappingURL=style.css.map */
+}/* # sourceMappingURL=style.css.map */
