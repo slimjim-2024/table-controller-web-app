@@ -10,6 +10,11 @@ body {
   display: grid;
 }
 
+.login {
+  aspect-ratio: 4/1;
+  text-align: center;
+}
+
 .textInput {
   color: pink;
 }/*# sourceMappingURL=style.css.map */
