@@ -10,18 +10,43 @@
 <body>
     <header class="blue">
         <h1>Table CTRL</h1>
+        <div class="right">
+            <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+            </label>
+        </div>
     </header>
     <main>
         <div>
-            <button id="loginBtn">Login</button>
-            <button id="SignupBtn" class="clear">Signup</button>
+            <button id="loginBtn">Sign in</button>
+            <button id="signupBtn" class="clear">Sign up</button>
         </div>
-        <form class="grid">  
-            <input name="username" class="textInput" placeholder="Username">
-            <input name="password" class="textInput" placeholder="Password">
+        <form id="loginForm" class="grid">
+            <label for="username">Username:</label>
+            <input name="username" class="textInput" placeholder="">
+            <label for="password">Password:</label>
+            <input name="password" class="textInput" placeholder="">
             <span class="warning">Wrong username or password.</span>
+            <div>
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">Remember me</label>
+            </div>
             <input type="submit" class="blue" value="Continue">
         </form>
+        <!--
+        <form  id="signupForm" class="grid hidden">
+            <label for="username">Username:</label>
+            <input name="username" class="textInput">
+            <span class="warning">Username already in use.</span>
+            <label for="password">Password:</label>
+            <input name="password" class="textInput">
+            <label for="confirmPassword">Confirm Password:</label>
+            <input name="confirmPassword" class="textInput">
+            <span class="warning">Passwords don't match.</span>
+            <input type="submit" class="blue" value="Continue">
+        </form>
+        -->
     </main>
     <footer class="blue">
         <p>© 3AM Vibe Coders. All rights reserved.</p>
