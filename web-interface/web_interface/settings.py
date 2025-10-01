@@ -57,6 +57,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTH_USER_MODEL = "app.Users"
+
 ROOT_URLCONF = 'web_interface.urls'
 
 # Template configuration
@@ -92,6 +94,11 @@ DATABASES = {
         'USER':'root'
     }
 }
+
+
+AUTHENTICATION_BACKENDS = [
+    'app.authenticationBackend.MyCustomBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
