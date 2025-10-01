@@ -36,6 +36,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","*").split(",")
 INSTALLED_APPS = [
     'app',
     # Add your apps here to enable them
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,6 +56,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTH_USER_MODEL = "app.Users"
 
 ROOT_URLCONF = 'web_interface.urls'
 
@@ -77,17 +80,25 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'web_interface.wsgi.application'
+ASGI_APPLICATION = "web_interface.asgi.application"
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': DB_HOST,
+        'NAME': 'mydb',
         'PORT':3306,
         'PASSWORD':'rootpassword',
         'USER':'root'
     }
 }
+
+
+AUTHENTICATION_BACKENDS = [
+    'app.authenticationBackend.MyCustomBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
