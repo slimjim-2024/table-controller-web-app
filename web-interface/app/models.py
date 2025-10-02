@@ -2,12 +2,11 @@
 Definition of models.
 """
 
+from base64 import encode
 from hashlib import sha256
 from turtle import speed
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from idna import encode
-
 
 
 class Users(AbstractUser):
@@ -21,8 +20,11 @@ class Users(AbstractUser):
     is_staff = None
     is_superuser = None
 
+    def __str__(self):
+        return f"User: {self.username} with ID: {self.userID} Hello there"
+
     def check_password(self, raw_password):
-        return self.password.hex() == sha256(encode(raw_password, 'UTF-8')).digest().hex()
+        return self.password.hex() == sha256(raw_password.encode('UTF-8')).digest().hex()
 
 
     adminStatus = models.BinaryField(max_length=1, default=1) # binary field to set up to 8 admin status types
