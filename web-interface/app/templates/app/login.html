@@ -1,43 +1,53 @@
 {% extends "app/layout.html" %}
 
+{% block title %} Login {% endblock %}
+
+{% load static %}
+
+{% block pagecss %} <link rel="stylesheet" type="text/css" href="{% static 'app/content/login.css' %}" /> {% endblock %}
+
 {% block content %}
 
-<h2>{{ title }}</h2>
-<div class="row">
-    <div class="col-md-8">
-        <section id="loginForm">
-            <form action="." method="post" class="form-horizontal">
-                {% csrf_token %}
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                <div class="form-group">
-                    <label for="id_username" class="col-md-2 control-label">User name</label>
-                    <div class="col-md-10">
-                        {{ form.username }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="id_password" class="col-md-2 control-label">Password</label>
-                    <div class="col-md-10">
-                        {{ form.password }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="hidden" name="next" value="/" />
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                {% if form.errors %}
-                <p class="validation-summary-errors">Please enter a correct user name and password.</p>
-                {% endif %}
-            </form>
-        </section>
+<header class="blue">
+    <h1>Table CTRL</h1>
+    <div class="right">
+        <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+        </label>
     </div>
-    <div class="col-md-4">
-        <section id="socialLoginForm"></section>
+</header>
+<main>
+    <div>
+        <button id="loginBtn">Sign in</button>
+        <button id="signupBtn" class="clear">Sign up</button>
     </div>
-</div>
+    <form id="loginForm" class="grid">
+        <label for="username">Username:</label>
+        <input name="username" class="textInput" placeholder="">
+        <label for="password">Password:</label>
+        <input name="password" class="textInput" placeholder="">
+        <span class="warning">Wrong username or password.</span>
+        <div>
+            <input type="checkbox" id="rememberMe" name="rememberMe">
+            <label for="rememberMe">Remember me</label>
+        </div>
+        <input type="submit" class="blue" value="Continue">
+    </form>
+    <!--
+    <form  id="signupForm" class="grid hidden">
+        <label for="username">Username:</label>
+        <input name="username" class="textInput">
+        <span class="warning">Username already in use.</span>
+        <label for="password">Password:</label>
+        <input name="password" class="textInput">
+        <label for="confirmPassword">Confirm Password:</label>
+        <input name="confirmPassword" class="textInput">
+        <span class="warning">Passwords don't match.</span>
+        <input type="submit" class="blue" value="Continue">
+    </form>
+    -->
+</main>
 
 {% endblock %}
 
