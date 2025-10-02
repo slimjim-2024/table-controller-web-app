@@ -2,10 +2,11 @@
 
 
 {% block content %}
-{% load static %}
-
-
 <h1>IS THIS FUCKING WORKING?????</h1>
-<img src="{% static 'app/content/fish.gif' %}" alt="fish">
-
+{% load static %}
+{% if user.is_authenticated %}
+<img src="{% static '/app/image/fish.gif' %}" alt="fish"/>
+{% else %}
+<h1>Hell nah this dont work, login you big fat bith</h1>
+{% endif %}
 {% endblock %}
