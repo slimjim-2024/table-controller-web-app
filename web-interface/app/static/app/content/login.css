@@ -10,6 +10,9 @@ body {
   align-items: center;
   height: 100vh;
 }
+body > * {
+    padding: 1rem;
+}
 
 header, footer {
   position: fixed;

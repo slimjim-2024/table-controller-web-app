@@ -3,8 +3,8 @@ Definition of views.
 """
 
 from datetime import datetime
-from django.shortcuts import render
-from django.http import HttpRequest
+from django.shortcuts import redirect, render
+from django.http import HttpRequest, HttpResponse
 from django.contrib.auth import authenticate, login as auth_login
 from .forms import UserLoginForm
 from hashlib import sha256
@@ -16,6 +16,8 @@ def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        remember = request.POST.get('rememberPass')
+        print(f"{username} {password} {remember}")
         try:
             user = Users.objects.get(username=username)
         except Users.DoesNotExist:
@@ -26,22 +28,17 @@ def login(request):
                  errors = 'Invalid username or password'
                  return render(request, 'app/login.html', {'form': form, 'errors': errors})              
             auth_login(request, user)
+            if not remember:
+                request.session.set_expiry(0)
             return render(request, 'app/hello.html', {'username': user})
 
             
-    return render(request, 'app/login.html', {'form': form})
+    return render(request, 'app/login.html', {'form': form, 'title': "Table Control"})
 
 def home(request):
     """Renders the home page."""
     assert isinstance(request, HttpRequest)
-    return render(
-        request,
-        'app/index.html',
-        {
-            'title':'Home Page',
-            'year':datetime.now().year,
-        }
-    )
+    return HttpResponse("Hello")
 
 def contact(request):
     """Renders the contact page."""
@@ -52,19 +49,6 @@ def contact(request):
         {
             'title':'Contact',
             'message':'Your contact page.',
-            'year':datetime.now().year,
-        }
-    )
-
-def about(request):
-    """Renders the about page."""
-    assert isinstance(request, HttpRequest)
-    return render(
-        request,
-        'app/about.html',
-        {
-            'title':'About',
-            'message':'Your application description page.',
             'year':datetime.now().year,
         }
     )

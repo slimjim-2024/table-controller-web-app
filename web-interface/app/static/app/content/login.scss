@@ -13,6 +13,10 @@ body {
     height: 100vh;
 }
 
+body > * {
+    padding: 1rem;
+}
+
 header, footer {
     position: fixed;
     display: flex;

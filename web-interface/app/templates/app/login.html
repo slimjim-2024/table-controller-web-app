@@ -1,35 +1,29 @@
 {% extends "app/layout.html" %}
 
-{% block title %} Login {% endblock %}
+<!--{% block title %} Login {% endblock %}-->
 
 {% load static %}
 
-{% block pagecss %} <link rel="stylesheet" type="text/css" href="{% static 'app/content/login.css' %}" /> {% endblock %}
 
 {% block content %}
-
-<header class="blue">
-    <h1>Table CTRL</h1>
-    <div class="right">
-        <label class="switch">
-            <input type="checkbox" id="darkModeToggle">
-            <span class="slider"></span>
-        </label>
-    </div>
-</header>
 <main>
     <div>
         <button id="loginBtn">Sign in</button>
         <button id="signupBtn" class="clear">Sign up</button>
     </div>
-    <form id="loginForm" class="grid">
+    <form action="/login" method="post" class="grid">
+        {% csrf_token %}
         <label for="username">Username:</label>
-        <input name="username" class="textInput" placeholder="">
+        <!--<input name="username" class="textInput" placeholder="">-->
+            {{form.username}}
         <label for="password">Password:</label>
-        <input name="password" class="textInput" placeholder="">
-        <span class="warning">Wrong username or password.</span>
+        <!--<input name="password" class="textInput" placeholder="">-->
+            {{form.password}}
+        <!--<span class="warning">Wrong username or password.</span>-->
+            {{errors}}
         <div>
-            <input type="checkbox" id="rememberMe" name="rememberMe">
+            {{form.rememberPass}}
+            <!--<input type="checkbox" id="rememberMe" name="rememberMe">-->
             <label for="rememberMe">Remember me</label>
         </div>
         <input type="submit" class="blue" value="Continue">
@@ -48,6 +42,9 @@
     </form>
     -->
 </main>
+<footer class="blue">
+    <p>&copy; 3AM Vibe Coders. All rights reserved.</p>
+</footer>
 
 {% endblock %}
 
