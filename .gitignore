@@ -4,3 +4,4 @@
 
 /.idea
 /.vs
+/web-interface/wifi2ble_sim/simulator/__pycache__

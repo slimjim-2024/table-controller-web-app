@@ -28,8 +28,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # Original key : 7f3f9027-17cf-4c21-a5e8-c0b417e581a5
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+#DEBUG = bool(os.environ.get("DEBUG", default=0))
 
+DEBUG= False
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","*").split(",")
 # Application references
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS

@@ -21,8 +21,9 @@ class BootstrapAuthenticationForm(AuthenticationForm):
 
 class UserLoginForm(forms.Form):
     username = forms.CharField(max_length=100, 
-                               widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
+                               widget=forms.TextInput(attrs={'class': 'textInput', 'placeholder': ''}))
     password = forms.CharField(label=_('Password'),
-                              widget=forms.PasswordInput(attrs={'class': 'form-control',
-                                                               'placeholder': 'Password'}))
+                              widget=forms.PasswordInput(attrs={'class': 'textInput',
+                                                               'placeholder': ''}))
+    rememberPass = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'type': 'checkbox', 'name':'rememberMe', 'id':'rememberMe'}))
     

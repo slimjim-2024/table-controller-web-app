@@ -1,43 +1,50 @@
 {% extends "app/layout.html" %}
 
-{% block content %}
+<!--{% block title %} Login {% endblock %}-->
 
-<h2>{{ title }}</h2>
-<div class="row">
-    <div class="col-md-8">
-        <section id="loginForm">
-            <form action="." method="post" class="form-horizontal">
-                {% csrf_token %}
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                <div class="form-group">
-                    <label for="id_username" class="col-md-2 control-label">User name</label>
-                    <div class="col-md-10">
-                        {{ form.username }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="id_password" class="col-md-2 control-label">Password</label>
-                    <div class="col-md-10">
-                        {{ form.password }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="hidden" name="next" value="/" />
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                {% if errors %}
-                <p class="validation-summary-errors">{{errors}}</p>
-                {% endif %}
-            </form>
-        </section>
+{% load static %}
+
+
+{% block content %}
+<main>
+    <div>
+        <button id="loginBtn">Sign in</button>
+        <button id="signupBtn" class="clear">Sign up</button>
     </div>
-    <div class="col-md-4">
-        <section id="socialLoginForm"></section>
-    </div>
-</div>
+    <form action="/login" method="post" class="grid">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <!--<input name="username" class="textInput" placeholder="">-->
+            {{form.username}}
+        <label for="password">Password:</label>
+        <!--<input name="password" class="textInput" placeholder="">-->
+            {{form.password}}
+        <!--<span class="warning">Wrong username or password.</span>-->
+            {{errors}}
+        <div>
+            {{form.rememberPass}}
+            <!--<input type="checkbox" id="rememberMe" name="rememberMe">-->
+            <label for="rememberMe">Remember me</label>
+        </div>
+        <input type="submit" class="blue" value="Continue">
+    </form>
+    <!--
+    <form  id="signupForm" class="grid hidden">
+        <label for="username">Username:</label>
+        <input name="username" class="textInput">
+        <span class="warning">Username already in use.</span>
+        <label for="password">Password:</label>
+        <input name="password" class="textInput">
+        <label for="confirmPassword">Confirm Password:</label>
+        <input name="confirmPassword" class="textInput">
+        <span class="warning">Passwords don't match.</span>
+        <input type="submit" class="blue" value="Continue">
+    </form>
+    -->
+</main>
+<footer class="blue">
+    <p>&copy; 3AM Vibe Coders. All rights reserved.</p>
+</footer>
 
 {% endblock %}
 

@@ -10,10 +10,7 @@ from app import forms, views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('contact/', views.contact, name='contact'),
-    path('about/', views.about, name='about'),
-    path('login/', views.login, name='login'),
-    path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
-    path('admin/', admin.site.urls),
-    path('test/', views.test, name='test'),
+    path('login', views.login, name='login'),
+    path('logout', LogoutView.as_view(next_page='/'), name='logout'),
+    path('test', views.test, name='test'),
 ]

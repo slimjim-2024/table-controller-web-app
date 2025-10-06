@@ -40,6 +40,7 @@ services:
       DB_PORT: 3306
       SECRET_KEY: 7f3f9027-17cf-4c21-a5e8-c0b417e581a5
     command: sh -c "pip install --no-cache-dir -r requirements.txt && python manage.py runserver 0.0.0.0:8000"
+    
     #command: sh -c "pip install --no-cache-dir -r requirements.txt && daphne -b 0.0.0.0 -p 8000 web_interface.asgi:application"
     ports:
       - "8000:8000"

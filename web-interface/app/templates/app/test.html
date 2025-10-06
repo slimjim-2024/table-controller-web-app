@@ -5,7 +5,14 @@
 <h1>IS THIS FUCKING WORKING?????</h1>
 {% load static %}
 {% if user.is_authenticated %}
-<img src="{% static '/app/image/fish.gif' %}" alt="fish"/>
+<img src="{% static '/app/image/fish.gif' %}" alt="fish" onclick="playMusic()"/>
+<audio src="{% static '/app/image/funkytown.mp3' %}" id="ftown"/>
+
+<script>
+    function playMusic() {
+        document.getElementById("ftown").play()
+    }
+</script>
 {% else %}
 <h1>Hell nah this dont work, login you big fat bith</h1>
 {% endif %}
