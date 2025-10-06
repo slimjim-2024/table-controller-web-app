@@ -4,10 +4,12 @@ Definition of views.
 
 from datetime import datetime
 from django.shortcuts import redirect, render
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login as auth_login
 from .forms import UserLoginForm
 from hashlib import sha256
+import urllib.request as requests
+import json
 from .models import Users
 
 
@@ -38,7 +40,21 @@ def login(request):
 def home(request):
     """Renders the home page."""
     assert isinstance(request, HttpRequest)
-    return HttpResponse("Hello")
+    resp = requests.Request('http://localhost:6000/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks', method='GET')
+    data = {}
+    try:    
+        with requests.urlopen(resp, timeout=10) as response:
+            data = json.loads(response.read().decode())
+    except Exception as e:
+        print(f"Big problem baoss: {e}")
+
+    return JsonResponse({
+                "status": "success",
+                "data": data,
+                "source": "urllib.request"
+            })
+
+
 
 def contact(request):
     """Renders the contact page."""
