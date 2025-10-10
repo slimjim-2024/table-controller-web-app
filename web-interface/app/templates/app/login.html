@@ -11,7 +11,7 @@
         <button id="loginBtn">Sign in</button>
         <button id="signupBtn" class="clear">Sign up</button>
     </div>
-    <form action="/login" method="post" class="grid">
+    <form action="/login/" method="post" class="grid">
         {% csrf_token %}
         <label for="username">Username:</label>
         <!--<input name="username" class="textInput" placeholder="">-->
@@ -19,8 +19,8 @@
         <label for="password">Password:</label>
         <!--<input name="password" class="textInput" placeholder="">-->
             {{form.password}}
-        <!--<span class="warning">Wrong username or password.</span>-->
-            {{errors}}
+    <span class="warning">{{errors}}</span>
+            
         <div>
             {{form.rememberPass}}
             <!--<input type="checkbox" id="rememberMe" name="rememberMe">-->
