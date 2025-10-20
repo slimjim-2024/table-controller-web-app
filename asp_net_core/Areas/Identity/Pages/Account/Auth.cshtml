@@ -1,0 +1,123 @@
+﻿@page
+@model asp_net_core.Areas.Identity.Pages.Account.AuthModel
+@{
+    ViewData["Title"] = "Login";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
+
+ <main>
+    <div>
+        <button id="loginBtn" onclick="displaySignIn()">Sign in</button>
+        <button id="signupBtn" class="clear" onclick="displayRegister()">Sign up</button>
+    </div>
+    <form id="loginForm" method="post" asp-page-handler="Login" class="grid">
+        <label asp-for="LoginForm.UserName"></label>
+        <input asp-for="LoginForm.UserName" class="form-control textInput" autocomplete="username" placeholder="" />
+        <label asp-for="LoginForm.Password">Password:</label>
+        <!--<input name="password" class="textInput" placeholder="">-->
+        <input asp-for="LoginForm.Password" autocomplete="password"/>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <span asp-validation-summary="All" class="warning"></span>
+
+        <div>
+            <input asp-for="LoginForm.RememberMe" type="checkbox" />
+            <!--<input type="checkbox" id="rememberMe" name="rememberMe">-->
+            <label asp-for="LoginForm.RememberMe">Remember me</label>
+        </div>
+        <input type="submit" class="blue" value="Continue">
+    </form>
+
+    <form id="signupForm" method="post" asp-page-handler="Register" class="grid hidden">
+        <label asp-for="RegisterForm.UserName"></label>
+        <input asp-for="RegisterForm.UserName" class="textInput" autocomplete="username"/>
+        <label asp-for="RegisterForm.Email"></label>
+        <input asp-for="RegisterForm.Email" class="textInput" autocomplete="email" />
+        <label asp-for="RegisterForm.Password">Password:</label>
+        <input asp-for="RegisterForm.Password" class="textInput" />
+        <label asp-for="RegisterForm.ConfirmPassword">Confirm Password:</label>
+        <input asp-for="RegisterForm.ConfirmPassword" class="textInput">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input type="submit" class="blue" value="Continue">
+    </form>
+</main>
+@* <div class="row">
+    <div class="col-md-4">
+        <main>
+            <h2>Login</h2>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <form method="post">
+                <div class="form-group">
+                    <label asp-for="Input.UserName"></label>
+                    <input asp-for="Input.UserName" class="form-control" autocomplete="username" />
+                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label asp-for="Input.RememberMe">
+                            <input asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Log in</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div> *@
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", ()=>{
+            if (!document.getElementById("signupForm").classList.contains("hidden"))
+            {
+                document.getElementById("signupForm").classList.add("hidden"); 
+            }
+            if (!document.getElementById("signupBtn").classList.contains("clear"))
+            {
+                document.getElementById("signupBtn").classList.add("clear");
+            }
+            displaySignIn();
+                        var hasRegisterErrors = false;
+            @{
+                    var registerErrors = ViewData.ModelState.Keys.Where(k => k.StartsWith("RegisterForm.")).ToList();
+                    if (registerErrors.Any())
+                    {
+                            <text>hasRegisterErrors = true;</text>
+                    }
+            }
+            if (hasRegisterErrors) {
+                displayRegister();
+            }
+        });
+
+        function displayRegister()
+        {
+            document.getElementById("signupForm").classList.remove("hidden");
+            document.getElementById("loginForm").classList.add("hidden");
+            document.getElementById("signupBtn").classList.remove("clear");
+            document.getElementById("loginBtn").classList.add("clear");
+        }
+
+        function displaySignIn()
+        {
+            document.getElementById("signupForm").classList.add("hidden");
+            document.getElementById("loginForm").classList.remove("hidden");
+            document.getElementById("signupBtn").classList.add("clear");
+            document.getElementById("loginBtn").classList.remove("clear");
+        }
+
+    </script>
+}

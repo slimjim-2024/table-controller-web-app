@@ -1,0 +1,42 @@
+services:
+  asp_net_core:
+    image: ${DOCKER_REGISTRY-}aspnetcore
+    build:
+      context: .
+      dockerfile: asp_net_core/Dockerfile
+    # depends_on:
+    #   - mssql
+    # environment:
+    #   - ConnectionStrings__DefaultConnection=Server=mssql;Database=AspNetCoreApp;User Id=sa;Password=Admin@1234;TrustServerCertificate=True;
+
+
+  simulator:
+    build: ./wifi_sim
+    restart: always
+    volumes:
+     - ./wifi_sim/wifi2ble:/app
+    command: sh -c "python simulator/main.py --desks 10 --port 6000"
+    ports:
+     - "6000:6000"
+  # mssql:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   environment:
+  #     SA_PASSWORD: "Admin@1234"
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_PID: "Express"
+  #   user: "0"
+  #   ports:
+  #     - "1433:1433"
+  #   volumes:
+  #     - ./mssql_data:/var/opt/mssql
+  #   deploy:
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Admin@1234 -Q 'SELECT 1' || exit 1"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 10s
+
+
+

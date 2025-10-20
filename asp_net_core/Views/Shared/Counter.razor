@@ -1,0 +1,56 @@
+﻿<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+@using System.Text.Json;
+@using System.Text.Json.Nodes
+<button class="btn btn-primary" @onclick="GetData">Click me</button>
+
+<div>
+    <p>received data is:</p>
+    <ul>
+    @foreach(string i in @receivedData)
+    {
+        <li>Desk: <a @onclick="() => GetTable(i)">@i</a>
+            <p>@if(@data.ContainsKey(i)){<text>@data[i]</text>}</p></li>
+    }
+    </ul>
+</div>
+
+
+
+
+@code {
+    private int currentCount = 0;
+    private string[] receivedData = [];
+    private object obj = null;
+    private Dictionary<string, string> data = new();
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private async Task GetData()
+    {
+
+        HttpClient client = new();
+        client.BaseAddress = new Uri("http://simulator:6000");
+        var response = await client.GetAsync("/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks");
+        // receivedData = await response.Content.ReadAsStringAsync() ?? "No content";
+        var content = await response.Content.ReadAsStreamAsync();
+        receivedData = await JsonSerializer.DeserializeAsync<string[]>(content) ?? [];
+        client.Dispose();
+    }
+
+    private async Task GetTable(string desk)
+    {
+        HttpClient client = new();
+        client.BaseAddress = new Uri("http://simulator:6000");
+        var response = await client.GetAsync($"/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks/{desk}");
+        var content = await response.Content.ReadAsStreamAsync();
+        var tableData = await JsonNode.ParseAsync(content);
+        data[desk] = tableData.ToJsonString();
+        // TO DO: implement table fetch
+
+    }
+}
