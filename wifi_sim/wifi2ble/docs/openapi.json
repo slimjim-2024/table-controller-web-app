@@ -1,0 +1,262 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Desk Management REST API",
+    "version": "1.0.0",
+    "description": "API for managing desk data including configurations, state, and usage counters."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/api/v2",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/{api_key}/desks": {
+      "get": {
+        "summary": "Get all desks",
+        "description": "Retrieve a list of all desk IDs available in the system.",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "API key for authorization."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of desk IDs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "cd:fb:1a:53:fb:e6"
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/{api_key}/desks/{desk_id}": {
+      "get": {
+        "summary": "Get specific desk data",
+        "description": "Retrieve detailed data for a specific desk by its ID.",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "API key for authorization."
+          },
+          {
+            "name": "desk_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the desk to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed desk data.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Desk" } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/{api_key}/desks/{desk_id}/{category}": {
+      "get": {
+        "summary": "Get specific category data of a desk",
+        "description": "Retrieve a specific category (config, state, usage, or lastErrors) of a desk's data.",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "API key for authorization."
+          },
+          {
+            "name": "desk_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the desk to retrieve."
+          },
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["config", "state", "usage", "lastErrors"]
+            },
+            "description": "The category of data to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The specified category data of the desk.",
+            "content": { "application/json": { "schema": { "type": "object", "additionalProperties": true } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "put": {
+        "summary": "Update specific category data of a desk",
+        "description": "Update a specific category of a desk, such as setting a new `position_mm` in the `state` category.",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "API key for authorization."
+          },
+          {
+            "name": "desk_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The ID of the desk to update."
+          },
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "enum": ["state"] },
+            "description": "The category of data to update (currently only `state` is updatable)."
+          }
+        ],
+        "requestBody": {
+          "description": "JSON object with data to update in the specified category.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "position_mm": { "type": "integer", "example": 1000 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated data and the real-time position.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "position_mm": { "type": "integer", "example": 1000 }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Desk": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "example": "DESK 4486" },
+              "manufacturer": { "type": "string", "example": "Desk-O-Matic Co." }
+            }
+          },
+          "state": {
+            "type": "object",
+            "properties": {
+              "position_mm": { "type": "integer", "example": 680 },
+              "speed_mms": { "type": "integer", "example": 0 },
+              "status": { "type": "string", "example": "Normal" },
+              "isPositionLost": { "type": "boolean", "example": false },
+              "isOverloadProtectionUp": { "type": "boolean", "example": false },
+              "isOverloadProtectionDown": { "type": "boolean", "example": false },
+              "isAntiCollision": { "type": "boolean", "example": false }
+            }
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "activationsCounter": { "type": "integer", "example": 25 },
+              "sitStandCounter": { "type": "integer", "example": 1 }
+            }
+          },
+          "lastErrors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time_s": { "type": "integer", "example": 120 },
+                "errorCode": { "type": "integer", "example": 93 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request due to invalid data or parameters.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": { "error": { "type": "string", "example": "Invalid endpoint" } }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized access due to invalid API key.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": { "error": { "type": "string", "example": "Unauthorized" } }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": { "error": { "type": "string", "example": "Desk not found" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,338 @@
+{
+    "cd:fb:1a:53:fb:e6": {
+        "desk_data": {
+            "config": {
+                "name": "DESK 4486",
+                "manufacturer": "Desk-O-Matic Co."
+            },
+            "state": {
+                "position_mm": 680,
+                "speed_mms": 0,
+                "status": "Normal",
+                "isPositionLost": false,
+                "isOverloadProtectionUp": false,
+                "isOverloadProtectionDown": false,
+                "isAntiCollision": false
+            },
+            "usage": {
+                "activationsCounter": 48,
+                "sitStandCounter": 9
+            },
+            "lastErrors": [
+                {
+                    "time_s": 869,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 847,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 718,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 666,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 604,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 600,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 547,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 526,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 511,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 482,
+                    "errorCode": 93
+                }
+            ],
+            "clock_s": 921
+        },
+        "user": "active"
+    },
+    "current_time_s": 57000,
+    "ee:62:5b:b8:73:1d": {
+        "desk_data": {
+            "config": {
+                "name": "DESK 6743",
+                "manufacturer": "Desk-O-Matic Co."
+            },
+            "state": {
+                "position_mm": 1320,
+                "speed_mms": 0,
+                "status": "Normal",
+                "isPositionLost": false,
+                "isOverloadProtectionUp": false,
+                "isOverloadProtectionDown": false,
+                "isAntiCollision": false
+            },
+            "usage": {
+                "activationsCounter": 30,
+                "sitStandCounter": 2
+            },
+            "lastErrors": [
+                {
+                    "time_s": 120,
+                    "errorCode": 93
+                }
+            ],
+            "clock_s": 721
+        },
+        "user": "standing"
+    },
+    "70:9e:d5:e7:8c:98": {
+        "desk_data": {
+            "config": {
+                "name": "DESK 3677",
+                "manufacturer": "Desk-O-Matic Co."
+            },
+            "state": {
+                "position_mm": 1266,
+                "speed_mms": 0,
+                "status": "Collision",
+                "isPositionLost": false,
+                "isOverloadProtectionUp": false,
+                "isOverloadProtectionDown": false,
+                "isAntiCollision": true
+            },
+            "usage": {
+                "activationsCounter": 37,
+                "sitStandCounter": 2
+            },
+            "lastErrors": [
+                {
+                    "time_s": 626,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 484,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 423,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 364,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 333,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 120,
+                    "errorCode": 93
+                }
+            ],
+            "clock_s": 659
+        },
+        "user": "active"
+    },
+    "00:ec:eb:50:c2:c8": {
+        "desk_data": {
+            "config": {
+                "name": "DESK 3050",
+                "manufacturer": "Desk-O-Matic Co."
+            },
+            "state": {
+                "position_mm": 680,
+                "speed_mms": 0,
+                "status": "Normal",
+                "isPositionLost": false,
+                "isOverloadProtectionUp": false,
+                "isOverloadProtectionDown": false,
+                "isAntiCollision": false
+            },
+            "usage": {
+                "activationsCounter": 27,
+                "sitStandCounter": 1
+            },
+            "lastErrors": [
+                {
+                    "time_s": 120,
+                    "errorCode": 93
+                }
+            ],
+            "clock_s": 726
+        },
+        "user": "seated"
+    },
+    "f1:50:c2:b8:bf:22": {
+        "desk_data": {
+            "config": {
+                "name": "DESK 8294",
+                "manufacturer": "Desk-O-Matic Co."
+            },
+            "state": {
+                "position_mm": 766,
+                "speed_mms": 0,
+                "status": "Collision",
+                "isPositionLost": false,
+                "isOverloadProtectionUp": false,
+                "isOverloadProtectionDown": false,
+                "isAntiCollision": true
+            },
+            "usage": {
+                "activationsCounter": 41,
+                "sitStandCounter": 5
+            },
+            "lastErrors": [
+                {
+                    "time_s": 722,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 674,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 604,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 453,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 396,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 341,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 120,
+                    "errorCode": 93
+                }
+            ],
+            "clock_s": 744
+        },
+        "user": "active"
+    },
+    "ce:38:a6:30:af:1d": {
+        "desk_data": {
+            "config": {
+                "name": "DESK 7380",
+                "manufacturer": "Desk-O-Matic Co."
+            },
+            "state": {
+                "position_mm": 680,
+                "speed_mms": 0,
+                "status": "Normal",
+                "isPositionLost": false,
+                "isOverloadProtectionUp": false,
+                "isOverloadProtectionDown": false,
+                "isAntiCollision": false
+            },
+            "usage": {
+                "activationsCounter": 41,
+                "sitStandCounter": 3
+            },
+            "lastErrors": [
+                {
+                    "time_s": 624,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 535,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 416,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 388,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 323,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 264,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 120,
+                    "errorCode": 93
+                }
+            ],
+            "clock_s": 674
+        },
+        "user": "active"
+    },
+    "91:17:a4:3b:f4:4d": {
+        "desk_data": {
+            "config": {
+                "name": "DESK 6782",
+                "manufacturer": "Desk-O-Matic Co."
+            },
+            "state": {
+                "position_mm": 766,
+                "speed_mms": 0,
+                "status": "Collision",
+                "isPositionLost": false,
+                "isOverloadProtectionUp": false,
+                "isOverloadProtectionDown": false,
+                "isAntiCollision": true
+            },
+            "usage": {
+                "activationsCounter": 40,
+                "sitStandCounter": 3
+            },
+            "lastErrors": [
+                {
+                    "time_s": 1122,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 1071,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 1042,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 970,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 885,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 824,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 763,
+                    "errorCode": 93
+                },
+                {
+                    "time_s": 120,
+                    "errorCode": 93
+                }
+            ],
+            "clock_s": 1151
+        },
+        "user": "active"
+    }
+}
