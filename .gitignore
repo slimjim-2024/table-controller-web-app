@@ -7,3 +7,7 @@
 /web-interface/wifi2ble_sim/simulator/__pycache__
 /bin/Debug
 /obj
+/WebTest/WebTests/obj
+/asp_net_core/bin
+/asp_net_core/obj
+
