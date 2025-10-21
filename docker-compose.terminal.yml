@@ -8,6 +8,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
+    volumes:
+      - ./asp_net_core/db.sqlite:/app/db.sqlite
       # - ASPNETCORE_HTTPS_PORTS=8081
     # depends_on:
     #   - mssql
