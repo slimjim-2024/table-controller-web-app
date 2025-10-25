@@ -3,8 +3,25 @@ using asp_net_core.Data;
 using asp_net_core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Optional: configure Kestrel to use a PFX if configured.
+// Put certificate path and password in configuration (e.g., appsettings.json or environment variables):
+// "Kestrel": { "Certificates": { "Default": { "Path": "certs/servercert.pfx", "Password": "pfxPassword" } } }
+var certPath = builder.Configuration["Kestrel:Certificates:Default:Path"];
+var certPassword = builder.Configuration["Kestrel:Certificates:Default:Password"];
+if (!string.IsNullOrEmpty(certPath))
+{
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ConfigureHttpsDefaults(httpsOptions =>
+        {
+            httpsOptions.ServerCertificate = new X509Certificate2(certPath, certPassword);
+        });
+    });
+}
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -20,7 +37,6 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.SignIn.RequireConfirmedEmail = false;
     options.Password.RequireNonAlphanumeric = false;
     options.User.RequireUniqueEmail = true;
-
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -37,7 +53,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -46,7 +61,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // <-- Added authentication middleware
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 

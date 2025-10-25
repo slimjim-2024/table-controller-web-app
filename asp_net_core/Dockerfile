@@ -2,11 +2,14 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser /app
+USER appuser
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -26,5 +29,11 @@ RUN dotnet publish "./asp_net_core.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+
+# Create directory for database and ensure proper permissions
+USER root
+RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
+USER appuser
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "asp_net_core.dll"]

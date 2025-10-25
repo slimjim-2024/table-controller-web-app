@@ -4,6 +4,13 @@ services:
     build:
       context: .
       dockerfile: asp_net_core/Dockerfile
+    volumes:
+      - ./certs:/app/certs:ro
+      - ./asp_net_core/wwwroot:/app/wwwroot:ro
+    environment:
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/servercert.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=pfxPassword
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
     # depends_on:
     #   - mssql
     # environment:
