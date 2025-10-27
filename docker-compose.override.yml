@@ -1,4 +1,4 @@
-services:
+dcoservices:
   asp_net_core:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
