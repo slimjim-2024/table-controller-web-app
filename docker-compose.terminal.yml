@@ -6,10 +6,13 @@ services:
     ports:
      - "8080:8080"
     depends_on:
-      - my_sql
+      my_sql:
+        condition: service_healthy
+
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DefaultConnection=server=my_sql;port=3306;database=mydatabase;user=dodik;password=markloh
     volumes:
       - ./asp_net_core/db.sqlite:/app/db.sqlite
       - ./certs:/app/certs:ro
@@ -32,6 +35,12 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 
   simulator:

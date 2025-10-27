@@ -23,11 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\WebTest\WebTests\WebTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebTest\WebTests\WebTests.csproj" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>
