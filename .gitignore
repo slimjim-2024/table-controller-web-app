@@ -35,3 +35,11 @@
 /wifi_sim/wifi2ble/.vscode
 /wifi_sim/wifi2ble/simulator/__pycache__
 /asp_net_core/obj
+/mysql_data/#innodb_redo
+/mysql_data/#innodb_temp
+/mysql_data/mysql
+/mysql_data/performance_schema
+/mysql_data/sys
+*.dblwr
+*.cnf
+/mysql_data/*
