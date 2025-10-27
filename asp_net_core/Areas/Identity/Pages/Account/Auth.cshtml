@@ -18,7 +18,7 @@
         <input asp-for="LoginForm.UserName" class="form-control textInput" autocomplete="username" placeholder="" />
         <label asp-for="LoginForm.Password">Password:</label>
         <!--<input name="password" class="textInput" placeholder="">-->
-        <input asp-for="LoginForm.Password" autocomplete="password"/>
+        <input asp-for="LoginForm.Password" class="form-control textInput" autocomplete="password" />
         <div asp-validation-summary="All" class="text-danger"></div>
         <span asp-validation-summary="All" class="warning"></span>
 
@@ -32,13 +32,13 @@
 
     <form id="signupForm" method="post" asp-page-handler="Register" class="grid hidden">
         <label asp-for="RegisterForm.UserName"></label>
-        <input asp-for="RegisterForm.UserName" class="textInput" autocomplete="username"/>
+        <input asp-for="RegisterForm.UserName" class="form-control textInput" autocomplete="username" />
         <label asp-for="RegisterForm.Email"></label>
-        <input asp-for="RegisterForm.Email" class="textInput" autocomplete="email" />
+        <input asp-for="RegisterForm.Email" class="form-control textInput" autocomplete="email" />
         <label asp-for="RegisterForm.Password">Password:</label>
-        <input asp-for="RegisterForm.Password" class="textInput" />
+        <input asp-for="RegisterForm.Password" class="form-control textInput" />
         <label asp-for="RegisterForm.ConfirmPassword">Confirm Password:</label>
-        <input asp-for="RegisterForm.ConfirmPassword" class="textInput">
+        <input asp-for="RegisterForm.ConfirmPassword" class="form-control textInput">
         <div asp-validation-summary="All" class="text-danger"></div>
         <input type="submit" class="blue" value="Continue">
     </form>

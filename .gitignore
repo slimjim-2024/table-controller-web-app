@@ -11,3 +11,27 @@
 /asp_net_core/bin
 /asp_net_core/obj
 
+/bin/Release
+/certs/**
+/WebTest/.vs
+/WebTest/WebTests/bin/Debug/net8.0
+/WebTest/WebTests/bin/Release/net8.0/cs
+/wifi_sim/wifi2ble/.vscode
+/WebTest/WebTests/bin/Release/net8.0
+/asp_net_core/bin
+/bin
+/obj
+*.pfx
+/WebTest/.vs
+/WebTest/WebTests/bin
+/WebTest/WebTests/obj/Debug/net8.0
+/WebTest/WebTests/obj/Release/net8.0
+/WebTest/WebTests/obj/project.assets.json
+/WebTest/WebTests/obj/project.nuget.cache
+/WebTest/WebTests/obj/WebTests.csproj.nuget.dgspec.json
+/WebTest/WebTests/obj/WebTests.csproj.nuget.g.targets
+/WebTest/WebTests/obj/WebTests.csproj.nuget.g.props
+/wifi_sim/wifi2ble/.idea
+/wifi_sim/wifi2ble/.vscode
+/wifi_sim/wifi2ble/simulator/__pycache__
+/asp_net_core/obj

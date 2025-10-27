@@ -11,24 +11,24 @@ body {
     height: 100vh;
 }
 
-    body > * {
-        padding: 1rem;
-    }
+body > * {
+    padding: 1rem;
+}
 
+/* --------------------- HEADER & FOOTER */
 header, footer {
     position: fixed;
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 header {
     top: 0;
-    width: 100%;
 }
 
 footer {
     bottom: 0;
-    width: 100%;
 }
 
 .right {
@@ -47,21 +47,40 @@ footer {
 
 form, button {
     background-color: lightgrey;
+    outline: #121212 3px;
+    
 }
 
 form {
     padding: 2rem;
-    box-shadow: 0 4px 6px 2px black;
 }
 
 button {
     border: none;
     padding: 1rem 2rem 1px 2rem;
     border-radius: 0.5rem 0.5rem 0 0;
+
 }
 
 form.hidden {
     display: none;
+    white-space: nowrap;
+}
+
+
+/* ------------------------------- NAV */
+.navbar-nav{
+    flex-direction: row;
+    justify-content: space-around;
+    margin-right: 5rem;
+    width: 15vw;
+    min-width: 200px;
+    align-items: center;
+}
+
+.nav-message{
+    overflow: hidden;
+    text-wrap-mode: nowrap;
 }
 
 .clear {
@@ -130,6 +149,16 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+.form-inline{
+    padding: 2px;
+}
+
+.tableId{
+    font-size: 20px;
+} 
+
+
+
 /*
 body:has(header:has(#darkModeToggle:checked)) {
     background-color: #121212;
@@ -142,3 +171,15 @@ body:has(header:has(#darkModeToggle:checked)) {
     }
 }
 */ /*# sourceMappingURL=style.css.map */
+
+
+/* --------------------------------------------------------------------- TABLES STUFF */
+
+.deskGrid {
+    border: 1px solid black;
+    margin: 1rem;
+}
+
+.deskGrid * {
+    border: 1px solid black;
+}

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> SignInManager
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -14,12 +15,17 @@
 </head>
 <body>
     <header class="blue">
-        <h1>Table CTRL</h1>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a href="/"><h1>Table CTRL</h1></a>
+
+        }
+        else
+        {
+            <a ><h1>Table CTRL</h1></a>
+        }
         <div class="right">
-            <label class="switch">
-                <input type="checkbox" id="darkModeToggle">
-                <span class="slider"></span>
-            </label>
+
             <partial name="_LoginPartial" />
         </div>
 
@@ -47,7 +53,7 @@
         </nav>
     </header> *@
     <div class="container">
-            @RenderBody()
+        @RenderBody()
     </div>
 
     <footer class="blue">
