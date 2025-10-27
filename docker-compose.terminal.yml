@@ -1,0 +1,29 @@
+services:
+  asp_net_core:
+    build:
+      context: .
+      dockerfile: asp_net_core/Dockerfile
+    ports:
+     - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    volumes:
+      - ./asp_net_core/db.sqlite:/app/db.sqlite
+      - ./certs:/app/certs:ro
+
+      # - ASPNETCORE_HTTPS_PORTS=8081
+    # depends_on:
+    #   - mssql
+    # environment:
+    #   - ConnectionStrings__DefaultConnection=Server=mssql;Database=AspNetCoreApp;User Id=sa;Password=Admin@1234;TrustServerCertificate=True;
+
+
+  simulator:
+    build: ./wifi_sim
+    restart: always
+    volumes:
+     - ./wifi_sim/wifi2ble:/app
+    command: sh -c "python simulator/main.py --desks 10 --port 6000"
+    ports:
+     - "6000:6000"
