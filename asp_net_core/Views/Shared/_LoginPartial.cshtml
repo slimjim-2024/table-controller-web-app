@@ -5,8 +5,12 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-    <li class="nav-item"><label class="switch"><input class="checkbox" id="darkModeToggle">
-            <span class="slider"></span>
+    <li class="nav-item">
+        <label class="switch">
+            <img class="sliderIMG" src="\moony.png" alt="moooooooooooon"/>
+            <img class="sliderIMG" src="\sunny.png" alt="suuuuuuuuuuuun"/>
+            <input type="checkbox">
+            <span id="darkModeSlider"class="slider round"></span>
         </label>
     </li>
     @* <li class="nav-item"> *@
