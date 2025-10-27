@@ -5,3 +5,16 @@
 /.idea
 /.vs
 /web-interface/wifi2ble_sim/simulator/__pycache__
+/bin/Debug
+/obj
+/WebTest/WebTests/obj
+/asp_net_core/bin
+/asp_net_core/obj
+
+/bin/Release
+/certs
+/WebTest/.vs
+/WebTest/WebTests/bin/Debug/net8.0
+/WebTest/WebTests/bin/Release/net8.0/cs
+/wifi_sim/wifi2ble/.vscode
+/WebTest/WebTests/bin/Release/net8.0

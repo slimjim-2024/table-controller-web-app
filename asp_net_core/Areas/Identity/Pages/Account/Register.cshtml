@@ -1,0 +1,41 @@
+﻿@page
+@model asp_net_core.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register</h2>
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <label asp-for="Input.UserName"></label>
+        <input asp-for="Input.UserName" />
+        <span asp-validation-for="Input.UserName"></span>
+    </div>
+    <div>
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" />
+        <span asp-validation-for="Input.Email"></span>
+    </div>
+    <div>
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" type="password" />
+        <span asp-validation-for="Input.Password"></span>
+    </div>
+    <div>
+        <label asp-for="Input.ConfirmPassword"></label>
+        <input asp-for="Input.ConfirmPassword" type="password" />
+        <span asp-validation-for="Input.ConfirmPassword"></span>
+    </div>
+    <div>
+        <label asp-for="Input.RememberMe"></label>
+        <input asp-for="Input.RememberMe" type="checkbox" />
+        <span asp-validation-for="Input.RememberMe"></span>
+    </div>
+    <div asp-validation-summary="All"></div>
+    <button type="submit">Register</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
