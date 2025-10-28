@@ -9,6 +9,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    -webkit-transition: .4s;
+    transition: .4s;
 }
 
 body > * {
@@ -97,61 +99,68 @@ form.hidden {
 }
 
 .darkMode {
+    color: #FFFFFF;
     background-color: #222222;
-    color: white;
 }
 
-    .darkMode form {
-        color: black;
-    }
+.darkMode form {
+    color: black;
+}
 
-
-.nav-item .switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+/* -------------------------------dark mode slider */
+.switch {
+    position: relative;
+    cursor: pointer;
+    align-items: center;
+    width: 60px;
+    height: 34px;
 }
-.nav-item .switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
-.nav-item .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+.slider {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
 }
-.nav-item .sliderPNG {
-  position: absolute;
-  content: "";
-  left: 4px;
-  bottom: 4px;
-  -webkit-transition: .4s;
-  transition: .4s;
+#sliderIMG {
+    position: absolute;
+    padding-top: 4px;
+    padding-left: 4px;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
 }
-.nav-item input:checked + .slider {
-  background-color: #222222;
+input:checked + #sliderIMG.animate {
+    animation-name: slideAnimation;
+    animation-duration: .4s;
 }
-.nav-item input:focus + .slider {
-  box-shadow: 0 0 1px #222222;
+input:not(:checked) + #sliderIMG.animate {
+    animation-name: backslideAnimation;
+    animation-duration: .4s;
 }
-.nav-item input:checked + .sliderPNG {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+@keyframes slideAnimation {
+    from {left: 0px;}
+    to {left: 26px;}
 }
-.nav-item .slider.round {
-  border-radius: 34px;
+@keyframes backslideAnimation {
+    from {left: 26px;}
+    to {left: 0px;}
 }
-.nav-item .slider.round:before {
-  border-radius: 50%;
+input:checked ~ .slider{
+    background-color: #222222;
+}
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
 }
 
 .form-inline{
