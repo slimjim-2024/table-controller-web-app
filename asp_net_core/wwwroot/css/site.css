@@ -15,6 +15,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    -webkit-transition: .4s;
+    transition: .4s;
 }
 
 body > * {
@@ -136,7 +138,6 @@ a {
 form, button {
     background-color: lightgrey;
     outline: #121212 3px;
-    
 }
 
 form {
@@ -168,6 +169,11 @@ form.hidden {
     text-wrap-mode: nowrap;
 }
 
+.navbar-nav .nav-link {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
 .clear {
     background-color: transparent;
     color: inherit;
@@ -179,59 +185,68 @@ form.hidden {
 }
 
 .darkMode {
-    background-color: #121212;
-    color: white;
+    color: #FFFFFF;
+    background-color: #222222;
 }
 
-    .darkMode form {
-        color: black;
-    }
+.darkMode form {
+    color: black;
+}
 
+/* -------------------------------dark mode slider */
 .switch {
     position: relative;
-    display: inline-block;
+    cursor: pointer;
+    align-items: center;
     width: 60px;
     height: 34px;
 }
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
 .slider {
     position: absolute;
-    cursor: pointer;
+    z-index: -1;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    transition: 0.4s;
+    transition: .4s;
 }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: 0.4s;
-    }
-
-input:checked + .slider {
-    background-color: #2196F3;
+#sliderIMG {
+    position: absolute;
+    padding-top: 4px;
+    padding-left: 4px;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
 }
-
-input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
+input:checked + #sliderIMG.animate {
+    animation-name: slideAnimation;
+    animation-duration: .4s;
 }
-
-input:checked + .slider:before {
-    transform: translateX(26px);
+input:not(:checked) + #sliderIMG.animate {
+    animation-name: backslideAnimation;
+    animation-duration: .4s;
+}
+@keyframes slideAnimation {
+    from {left: 0px;}
+    to {left: 26px;}
+}
+@keyframes backslideAnimation {
+    from {left: 26px;}
+    to {left: 0px;}
+}
+input:checked ~ .slider{
+    background-color: #222222;
+}
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
 }
 
 .form-inline{

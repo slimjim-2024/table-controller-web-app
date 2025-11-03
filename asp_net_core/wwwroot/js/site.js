@@ -1,4 +1,21 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿darkModeCheck.addEventListener("click", makeDarkmode);
 
-// Write your JavaScript code.
+let interacted = false;
+
+function makeDarkmode()
+{
+    document.body.classList.toggle("darkMode");
+
+    var sliderImg = document.getElementById("sliderIMG");
+
+    if (!interacted) {
+        sliderImg.classList.add("animate");
+        interacted = true;
+    }
+    if (document.getElementById("darkModeCheck").checked) {
+        sliderImg.src = "/moony.png";
+    }
+    else {
+        sliderImg.src = "/sunny.png";
+    }
+}

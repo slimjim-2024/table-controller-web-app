@@ -1,0 +1,95 @@
+body {
+  background-color: white;
+  color: black;
+  font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+body > * {
+    padding: 1rem;
+}
+
+header, footer {
+  position: fixed;
+  display: flex;
+  align-items: center;
+}
+
+header {
+  top: 0;
+  width: 100%;
+}
+
+footer {
+  bottom: 0;
+  width: 100%;
+}
+
+.right {
+  position: fixed;
+  right: 0;
+}
+
+.blue {
+  background-color: #1961ac;
+}
+
+.warning {
+  color: red;
+  display: none;
+}
+
+form, button {
+  background-color: lightgrey;
+}
+
+form {
+  padding: 2rem;
+  box-shadow: 0 4px 6px 2px black;
+}
+
+button {
+  border: none;
+  padding: 1rem 2rem 1px 2rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+form.hidden {
+  display: none;
+}
+
+.clear {
+  background-color: transparent;
+  color: inherit;
+  box-shadow: none;
+}
+
+.grid {
+  display: grid;
+}
+
+.darkMode {
+  background-color: #121212;
+  color: white;
+}
+.darkMode form {
+  color: black;
+}
+
+/*
+body:has(header:has(#darkModeToggle:checked)) {
+    background-color: #121212;
+    color: white;
+    -webkit-transition: .4s;
+  transition: .4s;
+
+    form {
+        color: black;
+    }
+}
+*//*# sourceMappingURL=style.css.map */
