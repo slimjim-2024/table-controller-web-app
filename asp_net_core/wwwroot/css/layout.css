@@ -1,0 +1,174 @@
+body {
+    /*background-color: red;*/
+    background-color: white;
+    color: black;
+    /* Font stuff */
+    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: .25px;
+    /**/
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------ HEADER, FOOTER & MAIN */
+header, footer, main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+header, footer {
+    flex: 0 1 auto;
+    color: white;
+}
+
+header {
+    padding: 1rem;
+    justify-content: space-between;
+}
+
+footer {
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+
+footer > * {
+    margin: 0;
+}
+
+main {
+    overflow-y: hidden;
+    flex: 1 1 auto;
+}
+/* ------------------------------------------ */
+a, a * {
+    text-decoration: none;
+    color: inherit;
+    text-wrap-mode: nowrap;
+    margin: 0;
+}
+
+.blue {
+    background-color: #1961ac;
+    color: white;
+    transition: .4s;
+}
+
+button {
+    border: none;
+    color: inherit;
+    padding: 1rem 2rem 1px 2rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* ------------------------------- NAV */
+.navbar-nav {
+    flex-direction: row;
+    /*width: 15vw;*/
+    min-width: 200px;
+    align-items: center;
+}
+
+.navbar-nav .nav-item {
+    color: white;
+    font-size: 1rem;
+}
+
+.nav-message {
+    text-wrap-mode: nowrap;
+}
+
+.navbar-nav .nav-link {
+    padding-right: 10px;
+    padding-left: 10px;
+    color:inherit;
+}
+
+/* ------------------------------- DARK MODE */
+.darkMode {
+    color: white;
+    background-color: #222222;
+    transition: .4s;
+}
+
+.darkMode .blue {
+    background-color: #0a2745;
+    transition: .4s;
+}
+
+
+/* -------------------------------dark mode slider */
+.switch {
+    position: relative;
+    cursor: pointer;
+    align-items: center;
+    width: 60px;
+    height: 34px;
+}
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+#sliderIMG {
+    position: absolute;
+    padding-top: 4px;
+    z-index: 1;
+    padding-left: 4px;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+}
+input:checked + #sliderIMG.animate {
+    animation-name: slideAnimation;
+    animation-duration: .4s;
+}
+input:not(:checked) + #sliderIMG.animate {
+    animation-name: backslideAnimation;
+    animation-duration: .4s;
+}
+@keyframes slideAnimation {
+    from {left: 0px;}
+    to {left: 26px;}
+}
+@keyframes backslideAnimation {
+    from {left: 26px;}
+    to {left: 0px;}
+}
+input:checked ~ .slider{
+    background-color: #222222;
+}
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* ------------------------------- */
+.form-inline{
+    padding: 2px;
+}

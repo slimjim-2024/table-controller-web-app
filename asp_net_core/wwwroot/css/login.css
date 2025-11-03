@@ -1,95 +1,62 @@
-body {
-  background-color: white;
-  color: black;
-  font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+main {
+    flex-direction: column;
+}
+
+.submitButton {
+  border-radius: 8px;
+  border-width: 0;
+  cursor: pointer;
+  display: inline-block;
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-body > * {
-    padding: 1rem;
-}
-
-header, footer {
-  position: fixed;
-  display: flex;
-  align-items: center;
-}
-
-header {
-  top: 0;
-  width: 100%;
-}
-
-footer {
-  bottom: 0;
-  width: 100%;
-}
-
-.right {
-  position: fixed;
-  right: 0;
-}
-
-.blue {
-  background-color: #1961ac;
+  padding: 10px 12px;
+  text-align: center;
+  vertical-align: baseline;
+  white-space: nowrap
 }
 
 .warning {
-  color: red;
-  display: none;
+    color: red;
+    display: none;
 }
 
 form, button {
-  background-color: lightgrey;
+    background-color: lightgrey;
+    outline: #121212 3px;
+    transition: .4s;
 }
 
 form {
-  padding: 2rem;
-  box-shadow: 0 4px 6px 2px black;
+    display:flex;
+    padding: 2rem;
+    flex-direction: column;
 }
 
 button {
-  border: none;
-  padding: 1rem 2rem 1px 2rem;
-  border-radius: 0.5rem 0.5rem 0 0;
+    margin-top: 1rem;
+    cursor: pointer;
 }
 
 form.hidden {
-  display: none;
+    display: none;
 }
 
 .clear {
-  background-color: transparent;
-  color: inherit;
-  box-shadow: none;
+    background-color: transparent;
+    color: inherit;
+    box-shadow: none;
 }
 
-.grid {
-  display: grid;
+.signInUpButtons {
+    justify-self: left;
 }
 
-.darkMode {
-  background-color: #121212;
-  color: white;
-}
-.darkMode form {
-  color: black;
+/* ------------------------------- DARK MODE */
+.darkMode main #centerDiv form {
+    background-color: #2e2e2e;
+    transition: .4s;
 }
 
-/*
-body:has(header:has(#darkModeToggle:checked)) {
-    background-color: #121212;
-    color: white;
-    -webkit-transition: .4s;
-  transition: .4s;
-
-    form {
-        color: black;
-    }
+.darkMode main #centerDiv #signInUp button:not(.clear) {
+    background-color: #2e2e2e;
+    transition: .4s;
 }
-*//*# sourceMappingURL=style.css.map */

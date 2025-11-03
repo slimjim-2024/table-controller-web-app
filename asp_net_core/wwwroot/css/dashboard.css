@@ -1,0 +1,83 @@
+/* ---------------------------------------- INSIDE MAIN */
+main {
+    flex-direction: row;
+    padding: .5rem;
+}
+
+/*
+main {
+    background-color: tomato;
+}
+*/
+
+main > * {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    border-radius: 1rem;
+    margin: .5rem;
+}
+
+.topbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 .5rem;
+}
+
+.topbar > * {
+    margin: 0;
+}
+
+/* ------------------------------------------ TABLE */
+table {
+    border-collapse: separate;
+    border-spacing: 0 .25rem;
+    margin: 0;
+}
+.id {
+    text-align: center;
+}
+
+tbody {
+    overflow-y: scroll;
+}
+
+td:first-child, th:first-child {
+    padding-left: 0.5rem;
+    border-radius: 1rem 0 0 1rem;
+    font-weight: bold;
+}
+
+td:last-child, th:first-child {
+    padding-right: 0.5rem;
+    border-radius: 0 1rem 1rem 0;
+}
+
+.normal {
+    background-color: lightgrey;
+}
+
+.collision {
+    background-color: coral;
+}
+
+.disconnected {
+    background-color: red;
+}
+
+/* ------------------------------- DARK MODE */
+.darkMode .normal {
+    background-color: darkgrey;
+}
+
+.darkMode .collision {
+    background-color: chocolate;
+}
+
+.darkMode .disconnected {
+    background-color: darkred;
+}
