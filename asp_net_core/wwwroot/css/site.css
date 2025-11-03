@@ -1,7 +1,13 @@
 body {
+    /*background-color: red;*/
     background-color: white;
     color: black;
+    /* Font stuff */
     font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: .25px;
+    /**/
     margin: 0;
     padding: 0;
     display: flex;
@@ -15,29 +21,111 @@ body > * {
     padding: 1rem;
 }
 
-/* --------------------- HEADER & FOOTER */
-header, footer {
-    position: fixed;
+* {
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------ HEADER, FOOTER & MAIN */
+header, footer, main {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
+header, footer {
+    flex: 0 1 auto;
+}
+
 header {
-    top: 0;
+    justify-content: space-between;
 }
 
 footer {
-    bottom: 0;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
 }
 
-.right {
-    position: fixed;
-    right: 0;
+footer > * {
+    margin: 0;
+}
+
+main {
+    overflow-y: hidden;
+    flex-direction: row;
+    flex: 1 1 auto;
+}
+
+/* ---------------------------------------- INSIDE MAIN */
+main > * {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    margin: .5rem;
+}
+
+.topbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.topbar > * {
+    margin: 0;
+}
+
+/* ------------------------------------------ TABLE */
+
+table {
+    border-collapse: separate;
+    border-spacing: 0 .25rem;
+    margin: 0;
+}
+
+tbody {
+    overflow-y: scroll;
+}
+
+td:first-child, th:first-child {
+    padding-left: 0.5rem;
+    border-radius: 1rem 0 0 1rem;
+    font-weight: bold;
+}
+
+td:last-child, th:first-child {
+    padding-right: 0.5rem;
+    border-radius: 0 1rem 1rem 0;
+}
+
+.normal {
+    background-color: lightgrey;
+}
+
+.collision {
+    background-color: coral;
+}
+
+.disconnected {
+    background-color: red;
+}
+
+/* ------------------------------------------ */
+a {
+    text-decoration: none;
+    color: inherit;
+    text-wrap-mode: nowrap;
 }
 
 .blue {
     background-color: #1961ac;
+}
+
+.blue, .blue * {
+    color: white;
 }
 
 .warning {
@@ -71,15 +159,12 @@ form.hidden {
 /* ------------------------------- NAV */
 .navbar-nav{
     flex-direction: row;
-    justify-content: space-around;
-    margin-right: 5rem;
-    width: 15vw;
+    /*width: 15vw;*/
     min-width: 200px;
     align-items: center;
 }
 
 .nav-message{
-    overflow: hidden;
     text-wrap-mode: nowrap;
 }
 
@@ -171,6 +256,8 @@ body:has(header:has(#darkModeToggle:checked)) {
     }
 }
 */ /*# sourceMappingURL=style.css.map */
+
+/* Div */
 
 
 /* --------------------------------------------------------------------- TABLES STUFF */

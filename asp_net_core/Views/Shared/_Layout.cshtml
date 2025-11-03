@@ -18,17 +18,14 @@
         @if (SignInManager.IsSignedIn(User))
         {
             <a href="/"><h1>Table CTRL</h1></a>
-
         }
         else
         {
-            <a ><h1>Table CTRL</h1></a>
+            <a><h1>Table CTRL</h1></a>
         }
-        <div class="right">
-
+        <div>
             <partial name="_LoginPartial" />
         </div>
-
     </header>
     @* <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -52,10 +49,9 @@
             </div>
         </nav>
     </header> *@
-    <div class="container">
+    <main>
         @RenderBody()
-    </div>
-
+    </main>
     <footer class="blue">
         <p>&copy; 3AM Vibe Coders. All rights reserved.</p>
     </footer>
