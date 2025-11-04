@@ -1,5 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+
         document.body.classList.toggle("darkMode");
 
         document.getElementById("darkModeCheck").checked = true;
@@ -31,3 +32,7 @@ darkModeCheck.addEventListener("click", () => {
 });
 
 let interacted = false;
+
+menuCheck.addEventListener("click", () => {
+    document.getElementById("menu").classList.toggle("clicked");
+});

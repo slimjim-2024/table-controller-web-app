@@ -3,15 +3,33 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav">
-<li class="nav-item">
-    <label class="switch">
+<li class="nav-item mobileNaviItem">
+    <label class="darkSwitch">
         <input type="checkbox" id="darkModeCheck">
-        <img id="sliderIMG" src="\sunny.svg" alt="0"/>
+        <img id="sliderIMG" src="\sunny.svg" alt="O"/>
         <span class="slider round"></span>
     </label>
 </li>
 @if (SignInManager.IsSignedIn(User))
 {
+    <li class="nav-item mobileNaviItem" id="menuItem">
+        <label class="menuSwitch">
+            <input type="checkbox" id="menuCheck">
+            <img src="\menu.svg" alt="Menu" id="menuIcon"/>
+        </label>
+         <span id="menu">
+             <ul id="menuLinks">
+                 <li class="menuItem">
+                    <a class="nav-link nav-message" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Edit your profile @User.Identity?.Name!</a>
+                 </li>
+                <li class="menuItem">
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link">Logout</button>
+                    </form>
+                </li>
+             </ul>
+         </span>
+    </li>
     @* <li class="nav-item"> *@
     <li class="nav-item">
         <a class="nav-link nav-message" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
@@ -25,7 +43,7 @@
 }
 else
 {
-    <li class="nav-item">
+    <li class="nav-item mobileNaviItem">
         <a class="nav-link" asp-area="Identity" asp-page="/Account/Auth">Login / Register</a>
     </li>
 }

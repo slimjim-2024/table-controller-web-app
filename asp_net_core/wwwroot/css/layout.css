@@ -69,6 +69,10 @@ a, a * {
     transition: .4s;
 }
 
+h1 {
+    font-size: 2rem;
+}
+
 button {
     border: none;
     color: inherit;
@@ -79,8 +83,8 @@ button {
 /* ------------------------------- NAV */
 .navbar-nav {
     flex-direction: row;
-    /*width: 15vw;*/
-    min-width: 200px;
+    justify-content:center;
+    min-width: fit-content;
     align-items: center;
 }
 
@@ -113,14 +117,13 @@ button {
 
 
 /* -------------------------------dark mode slider */
-.switch {
+.darkSwitch {
     position: relative;
     cursor: pointer;
-    align-items: center;
     width: 60px;
     height: 34px;
 }
-.switch input { 
+.darkSwitch input { 
     opacity: 0;
     width: 0;
     height: 0;
@@ -167,8 +170,66 @@ input:checked ~ .slider{
 .slider.round:before {
     border-radius: 50%;
 }
+#menuItem {
+    display: none;
+}
 
-/* ------------------------------- */
-.form-inline{
-    padding: 2px;
+/* ------------------------------- Mobile view */
+
+@media only screen and (max-device-width: 480px){
+    header {
+        height: 10vh;
+        padding: 2vw;
+    }
+    #menuLinks {
+        display: none;
+    }
+    .nav-item:not(.mobileNaviItem) {
+        display: none;
+    }
+    #menuItem {
+        display: flex;
+    }
+    .menuSwitch {
+        position: relative;
+        display:flex;
+        cursor: pointer;
+        align-items: center;
+        margin: 5px;
+        width: 30px;
+        height: 30px;
+    }
+    #menuCheck {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    #menuIcon {
+        position: absolute;
+        align-self: center;
+        justify-self: center;
+        display: flex;
+        width: 30px;
+        height: 30px;
+    }
+    #menu {
+        min-width: 50vw;
+        width:fit-content;
+        height 0vh;
+        background-color: #2e2e2e;
+        position: fixed;
+        transition: .4s;
+        right: 0;
+        top: 10vh;
+    }
+    #menu.clicked {
+        height:fit-content;
+        transition: .4s;
+    }
+    #menu.clicked #menuLinks {
+        display: flex;
+        padding: 0;
+        flex-direction: column;
+        list-style-type: none;
+    }
 }
