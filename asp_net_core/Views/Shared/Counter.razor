@@ -1,33 +1,56 @@
-﻿<h1>Counter</h1>
-
-<p>Current count: @currentCount</p>
-@using System.Text.Json;
+﻿@using System.Text.Json
 @using System.Text.Json.Nodes
-<button class="btn btn-primary" @onclick="CallBack">Click me</button>
-
 
 <div class="leftDiv">
-    <p>Desks:</p>
-    <ul class="deskGrid">
-    @foreach(string i in @receivedData)
-    {
-        <li>Desk:
-            <a @onclick="() => GetTable(i)">@i</a>
-            <p>@if(@data.ContainsKey(i)){@data[i]}</p>
-        </li>
-    }
-    </ul>
-</div>
+    <div class="topbar">
+        <h1>Desks</h1>
+        <p>Refresh count: @currentCount</p>
+        <button class="btn btn-primary blue" @onclick="CallBack"><img src="\refresh.svg" alt="Refresh"/></button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="id">Id</th>
+                <th>Name</th>
+                <th class="status">Status</th>
+                <th>Errors</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var i in @deskData)
+            {
+                var id = i.Key;
+                var value = i.Value;
 
-<!--
-<div class="rightDiv">
+                string? name = null;
+                string? status = "disconnected";
+                int? errorCount = null;
+
+                if (value is not null)
+                {
+                    name = (value["config"]?["name"]??"").ToString();
+                    status = (value["state"]?["status"]??"").ToString().ToLower();
+                    errorCount = value["lastErrors"]?.AsArray().Count();
+                }
+
+                <tr class=@status>
+                    <td>@id</td>
+                    <td>@name</td>
+                    <td class="status">@status</td>
+                    <td>@errorCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
--->
+<div class="rightDiv">
+    <p>Im a thing</p>
+</div>
 
 @code {
-    private int currentCount = 0;
-    private string[] receivedData = [];
-    private Dictionary<string, MarkupString> data = new();
+    private int currentCount = 0; // Refresh count
+    private string[] deskIds = [];
+    private Dictionary<string, JsonNode?> deskData = new();
     private HttpClient client = new();
     private CancellationTokenSource? _cts;
 
@@ -82,7 +105,7 @@
         _ = InvokeAsync(GetData);
     }
 
-    private async Task FetchTableData()
+    private async Task FetchDeskData()
     {
         timer = new System.Threading.Timer(
             CallBack, 
@@ -96,32 +119,22 @@
 
         client.BaseAddress = new Uri("http://simulator:6000");
         var response = await client.GetAsync("/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks");
-        // receivedData = await response.Content.ReadAsStringAsync() ?? "No content";
+        // deskIds = await response.Content.ReadAsStringAsync() ?? "No content";
         var content = await response.Content.ReadAsStreamAsync();
-        receivedData = await JsonSerializer.DeserializeAsync<string[]>(content) ?? [];
-        foreach (string desk in receivedData)
+        deskIds = await JsonSerializer.DeserializeAsync<string[]>(content) ?? [];
+        foreach (string desk in deskIds)
         {
-            await GetTable(desk);
+            await GetDesk(desk);
         }
         await InvokeAsync(StateHasChanged);
 
         // client.Dispose();
     }
 
-    private async Task GetTable(string desk)
+    private async Task GetDesk(string desk)
     {
         var response = await client.GetAsync($"/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks/{desk}");
         var content = await response.Content.ReadAsStreamAsync();
-        var tableData = await JsonNode.ParseAsync(content);
-
-        //data[desk] = new MarkupString($"""<div class=tableId style="{(tableData!.ToJsonString().Length == 0 ? "color:red;": "color:green;" )}">{tableData!["config"]?["name"]} {tableData!["config"]?["manufacturer"]} </div>"""
-        //+ $"<div class=tableData>{tableData!["state"]}</div>");
-
-        data[desk] = new MarkupString($"""<div class=tableId style="{(tableData!.ToJsonString().Length == 0 ? "color:red;": "color:green;" )}">{tableData!["config"]?["name"]} {tableData!["config"]?["manufacturer"]} </div>"""
-        + $"<div class=tableData>{tableData!["state"]}</div>");
-
-
-        // TO DO: implement table fetch
-
+        deskData[desk] = await JsonNode.ParseAsync(content);
     }
 }
