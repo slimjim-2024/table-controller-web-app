@@ -103,8 +103,12 @@ button {
     color:inherit;
 }
 
-/* ------------------------------- DARK MODE */
-.darkMode {
+/* ------------------------------- DARK MODE & BACKGROUNDED */
+.backgrounded {
+    background-color: white;
+}
+
+.darkMode, .darkMode .backgrounded {
     color: white;
     background-color: #222222;
     transition: .4s;
@@ -114,7 +118,6 @@ button {
     background-color: #0a2745;
     transition: .4s;
 }
-
 
 /* -------------------------------dark mode slider */
 .darkSwitch {
@@ -215,7 +218,7 @@ input:checked ~ .slider{
     #menu {
         min-width: 50vw;
         width:fit-content;
-        height 0vh;
+        height: 0vh;
         background-color: #2e2e2e;
         position: fixed;
         transition: .4s;
