@@ -1,6 +1,7 @@
 ﻿@using System.Text.Json
 @using System.Text.Json.Nodes
 @using Microsoft.AspNetCore.Identity
+@using System.Text
 
 <div class="leftDiv">
     <div class="topbar">
@@ -54,10 +55,12 @@
     else
     {
         var SelectedDesk = deskData[selectedDeskId];
+        Console.WriteLine(SelectedDesk.ToJsonString());
 
-        <h2>Name: @(SelectedDesk["config"]?["name"]?? "N/A")</h2>
+        @* <h2>Name: @(SelectedDesk["config"]?["name"]?? "N/A")</h2>
         <h3>Manufacturer: @(SelectedDesk["config"]?["manufacturer"]?? "N/A")</h3>
-        <hr>
+        <hr> *@
+        @*<input type="number">*@
         <div>Position: @(SelectedDesk["state"]?["position_mm"])<br>
             position lost: @(SelectedDesk["state"]?["isPositionLost"]?? "N/A")<br>
             Overload Protection up:@(SelectedDesk["state"]?["isOverloadProtectionUp"] ?? "N/A")<br>
@@ -65,20 +68,40 @@
             Speed: @(SelectedDesk["state"]?["speed_mms"]?? "N/A")<br>
             Status: @(SelectedDesk["state"]?["status"] ?? "N/A")<br>
             Anti Collision On:@(SelectedDesk["state"]?["isAntiCollision"] ?? "N/A")<br>
-        </div> @*<input type="number">*@
+        </div> 
         <hr>
         <div>Activations: @(SelectedDesk["usage"]?["activationsCounter"]??"N/A") <br>
             Slavic Squat Counter:@(SelectedDesk["usage"]?["sitStandCounter"] ?? "N/A") <br>
         </div>
-        <div>Error number: @(SelectedDesk["lastErrors"].AsArray().Count())</div> 
+        <div>Error number: @(SelectedDesk["lastErrors"]?.AsArray()?.Count??-1)</div>
         <div>history</div>
         <div>graph</div>
         <div>warnings/reminders</div>
         <div>scheduling</div> @*<input type="time">*@
         <div> @*<ul>*@
-            <button>Save Sitting Height</button>
-            <button>Save Standing Height</button>
-            <button>Set Table Height</button>
+            <h3>Set Preferred Heights</h3>
+            <form @onsubmit="ChangeHeights" >
+                <AntiforgeryToken />
+            <label>
+                    Sitting Height (mm):
+                <InputNumber placeholder="Sitting Height (mm)" @bind-Value="heightRangeForm!.LowerHeight" />
+            </label>
+            <label>
+                Standing Height (mm):
+                <InputNumber placeholder="Standing Height (mm)" @bind-Value="heightRangeForm!.UpperHeight" />
+            </label>
+            @* <button>Save Sitting Height</button> *@
+            @* <button>Save Standing Height</button> *@
+            <button>Save Heights</button>
+            </form>
+            <form @onsubmit="ChangeHeight">
+                <label>
+                    Set current desk height from @SelectedDesk["state"]?["position_mm"] to:
+                <InputNumber  placeholder="Input desired Desk Height" @bind-Value="SetDeskHeight" />
+                </label>
+                <p></p>
+            <button type="submit">Set Table Height</button>
+            </form>
         </div>
     }
 </div>
@@ -91,7 +114,11 @@
     private CancellationTokenSource? _cts;
     private Task? _refreshTask;
     private System.Threading.Timer timer;
+
+    private int SetDeskHeight = 0;
     private string? selectedDeskId;
+    [SupplyParameterFromForm]
+    private DeskHeightRangeForm heightRangeForm { get; set; } = new DeskHeightRangeForm();
 
     private async Task GetData()
     {
@@ -119,5 +146,28 @@
     private void SelectDesk(string deskId)
     {
         selectedDeskId = deskId;
+    }
+
+    private async Task ChangeHeights()
+    {
+        Console.WriteLine($"Changing heights to: {heightRangeForm.LowerHeight} - {heightRangeForm.UpperHeight}");
+        await Task.CompletedTask;
+    }
+
+    private async Task ChangeHeight()
+    {
+        var body =JsonSerializer.Serialize( new { position_mm = SetDeskHeight });
+        var request = await client.PutAsync($"/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks/{selectedDeskId}/state", new StringContent(body, Encoding.UTF8, "application/json"));
+        Console.WriteLine("============================");
+        Console.WriteLine($"{request.StatusCode}\t");
+        Console.WriteLine("============================");
+
+    }
+
+    public class DeskHeightRangeForm
+    {
+        public int LowerHeight { get; set; }
+        public int UpperHeight { get; set; }
+
     }
 }
