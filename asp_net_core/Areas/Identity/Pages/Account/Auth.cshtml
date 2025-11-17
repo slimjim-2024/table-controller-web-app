@@ -11,8 +11,8 @@
 
 <div id="centerDiv">
     <div id="signInUp">
-        <button id="loginBtn" onclick="displaySignIn()">Sign in</button>
-        <button id="signupBtn" class="clear" onclick="displayRegister()">Sign up</button>
+        <button id="loginBtn" class="login-button" onclick="displaySignIn()">Sign in</button>
+        <button id="signupBtn" class="login-button clear" onclick="displayRegister()">Sign up</button>
     </div>
     <form id="loginForm" method="post" asp-page-handler="Login" class="form">
         <label asp-for="LoginForm.UserName"></label>

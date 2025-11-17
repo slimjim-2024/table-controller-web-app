@@ -10,15 +10,15 @@ main {
 }
 */
 
-main > * {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid black;
-    border-radius: 1rem;
-    margin: .5rem;
-    padding: 1rem;
+main > div {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid black;
+        border-radius: 1rem;
+        margin: .5rem;
+        padding: 1rem;
 }
 
 @media screen and (max-width: 720px) {
@@ -44,15 +44,33 @@ main > * {
     margin: 0;
 }
 
+.spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
 /* ------------------------------------------ TABLE */
 table {
     width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 .25em;
 }
 
 .tableDiv {
     flex: 1 1 auto;
     display: flex;
     overflow: auto;
+    margin-top: 1rem;
 }
 
 tbody tr {
@@ -77,9 +95,13 @@ thead {
     background-color: red;
 }
 
+.backgrouded {
+    transition: .4s;
+}
+
 /* ------------------------------------------ TABLE DARK MODE */
 .darkMode .normal {
-    background-color: darkgrey;
+    background-color: dimgrey;
 }
 
 .darkMode .collision {
@@ -87,7 +109,7 @@ thead {
 }
 
 .darkMode .disconnected {
-    background-color: darkred;
+    background-color: firebrick;
 }
 
 /* ------------------------------- RIGHT */
@@ -95,4 +117,14 @@ thead {
     display:flex;
     justify-content: center;
     align-content: center;
+}
+
+/* RANGE SLIDER */
+input[type=range] {
+    transition: 1.5s all linear in;
+}
+/* ------------------------------ MAIN VIEW */
+.display-4 {
+    justify-self: center;
+    align-self: center;
 }

@@ -1,13 +1,21 @@
 ﻿@using System.Text.Json
 @using System.Text.Json.Nodes
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @using System.Text
+@using asp_net_core.Models;
+@inject UserManager<ApplicationUser> ApplicationUser;
+@* @inject RoleManager<IdentityRole> UserRole; *@
+@inject AuthenticationStateProvider AuthStateProvider;
+
 
 <div class="leftDiv">
     <div class="topbar">
-        <h1>Desks</h1>
+        <h2>Desks</h2>
         <p>Refresh count: @currentCount</p>
-        <button class="btn btn-primary blue" @onclick="GetData"><img src="\refresh.svg" alt="Refresh"/></button>
+        <button class="btn btn-primary blue" @onclick="StartDataRefresh">
+            <img class="spinner" src="\refresh.svg" alt="Refresh"/>
+        </button>
     </div>
     <div class="tableDiv">
     <table>
@@ -40,7 +48,8 @@
                     <td class="id">@id</td>
                     <td class="name">@name</td>
                     <td class="status">@status</td>
-                    <td class="errors">@errorCount</td>
+                    
+                    <td class="errors">@if (isUserInRole) { <text>@errorCount</text> } else { <p> You are not an admin</p> }</td>
                 </tr>
             }
         </tbody>
@@ -83,23 +92,23 @@
             <form @onsubmit="ChangeHeights" >
                 <AntiforgeryToken />
             <label>
-                    Sitting Height (mm):
-                <InputNumber placeholder="Sitting Height (mm)" @bind-Value="heightRangeForm!.LowerHeight" />
+                Sitting Height:
+                <InputNumber placeholder="Sitting Height (mm)" @bind-Value="heightRangeForm!.LowerHeight"/>
+                mm
             </label>
             <label>
-                Standing Height (mm):
-                <InputNumber placeholder="Standing Height (mm)" @bind-Value="heightRangeForm!.UpperHeight" />
+                Standing Height:
+                <InputNumber placeholder="Standing Height (mm)" @bind-Value="heightRangeForm!.UpperHeight"/>
+                mm
             </label>
-            @* <button>Save Sitting Height</button> *@
-            @* <button>Save Standing Height</button> *@
             <button>Save Heights</button>
             </form>
             <form @onsubmit="ChangeHeight">
                 <label>
                     Set current desk height from @SelectedDesk["state"]?["position_mm"] to:
-                <InputNumber  placeholder="Input desired Desk Height" @bind-Value="SetDeskHeight" />
+                    <InputNumber  placeholder="Input desired Desk Height" @bind-Value="SetDeskHeight" />
                 </label>
-                <p></p>
+                <input type="range" min="680" max="1320" value="@(SelectedDesk["state"]?["position_mm"])" disabled>
             <button type="submit">Set Table Height</button>
             </form>
         </div>
@@ -110,20 +119,64 @@
     private int currentCount = 0; // Refresh count
     private string[] deskIds = [];
     private Dictionary<string, JsonNode> deskData = new();
-    private HttpClient client = new();
+    private HttpClient client = new()
+    {
+        BaseAddress = new Uri("http://simulator:6000"),
+        DefaultRequestHeaders = {
+            { "Accept", "application/json" },
+            { "Connection", "Close"}
+        }
+    };
     private CancellationTokenSource? _cts;
     private Task? _refreshTask;
     private System.Threading.Timer timer;
+    private readonly SemaphoreSlim _semaphore = new(1,1);
 
     private int SetDeskHeight = 0;
     private string? selectedDeskId;
     [SupplyParameterFromForm]
     private DeskHeightRangeForm heightRangeForm { get; set; } = new DeskHeightRangeForm();
 
+    private Boolean isUserInRole = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current authentication state
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var claimsUser = authState.User;
+
+        if (claimsUser.Identity?.IsAuthenticated == true)
+        {
+            // Option A (fast): check the claims principal directly
+            var isInRoleFromClaims = claimsUser.IsInRole("Admin"); // replace "Admin" with your role
+            var _identityUser = await ApplicationUser.GetUserAsync(claimsUser);
+
+            isUserInRole = isInRoleFromClaims;
+            if (_identityUser is not null)
+            {
+                isUserInRole = await ApplicationUser.IsInRoleAsync(_identityUser, "Admin");
+            }
+
+
+        }
+        await StartDataRefresh();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task StartDataRefresh()
+    {
+        var refreshedData = new Timer(async _ => await GetData(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1.5f));
+    }
+
+
     private async Task GetData()
     {
-
-        client.BaseAddress = new Uri("http://simulator:6000");
+        if (!await _semaphore.WaitAsync(0))
+        {
+            return;
+        }
         var response = await client.GetAsync("/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks");
         // deskIds = await response.Content.ReadAsStringAsync() ?? "No content";
         var content = await response.Content.ReadAsStreamAsync();
@@ -134,7 +187,7 @@
         }
         await InvokeAsync(StateHasChanged);
 
-        // client.Dispose();
+        _semaphore.Release();
     }
 
     private async Task GetDesk(string desk)
@@ -151,7 +204,6 @@
     private async Task ChangeHeights()
     {
         Console.WriteLine($"Changing heights to: {heightRangeForm.LowerHeight} - {heightRangeForm.UpperHeight}");
-        await Task.CompletedTask;
     }
 
     private async Task ChangeHeight()
@@ -161,6 +213,7 @@
         Console.WriteLine("============================");
         Console.WriteLine($"{request.StatusCode}\t");
         Console.WriteLine("============================");
+        
 
     }
 

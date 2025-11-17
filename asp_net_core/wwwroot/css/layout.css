@@ -73,13 +73,6 @@ h1 {
     font-size: 2rem;
 }
 
-button {
-    border: none;
-    color: inherit;
-    padding: 1rem 2rem 1px 2rem;
-    border-radius: 0.5rem 0.5rem 0 0;
-}
-
 /* ------------------------------- NAV */
 .navbar-nav {
     flex-direction: row;
