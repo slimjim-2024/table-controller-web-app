@@ -5,9 +5,14 @@ services:
       dockerfile: asp_net_core/Dockerfile
     ports:
      - "8080:8080"
+    depends_on:
+      my_sql:
+        condition: service_healthy
+
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__DefaultConnection=server=my_sql;port=3306;database=mydatabase;user=dodik;password=markloh
     volumes:
       - ./asp_net_core/db.sqlite:/app/db.sqlite
       - ./certs:/app/certs:ro
@@ -17,6 +22,25 @@ services:
     #   - mssql
     # environment:
     #   - ConnectionStrings__DefaultConnection=Server=mssql;Database=AspNetCoreApp;User Id=sa;Password=Admin@1234;TrustServerCertificate=True;
+
+  my_sql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: markloh
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: dodik
+      MYSQL_PASSWORD: markloh
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 
   simulator:

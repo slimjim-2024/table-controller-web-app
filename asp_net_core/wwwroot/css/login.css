@@ -31,9 +31,16 @@ form {
     flex-direction: column;
 }
 
-button {
+.login-button {
     margin-top: 1rem;
     cursor: pointer;
+}
+
+button {
+    border: none;
+    color: inherit;
+    padding: 1rem 2rem 1px 2rem;
+    border-radius: 0.5rem 0.5rem 0 0;
 }
 
 form.hidden {

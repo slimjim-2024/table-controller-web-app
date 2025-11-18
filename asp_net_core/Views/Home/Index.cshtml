@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using asp_net_core.Views.Shared
+@using asp_net_core.Views.Home
+
 @inject SignInManager<ApplicationUser> SignInManager
 
 
@@ -16,13 +17,5 @@
 <h1 class="display-4">Welcome</h1>
 <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 -->
-@if (SignInManager.IsSignedIn(User))
-{
-    <component type="typeof(Counter)" render-mode="ServerPrerendered" />
-}
-else
-{
+
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <p> please login to view the thing</p>
-}

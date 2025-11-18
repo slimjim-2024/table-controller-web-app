@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: asp_net_core/Dockerfile
+    depends_on:
+       - my_sql
     volumes:
       - ./certs:/app/certs:ro
       - ./asp_net_core/wwwroot:/app/wwwroot:ro
@@ -16,13 +18,31 @@ services:
     # environment:
     #   - ConnectionStrings__DefaultConnection=Server=mssql;Database=AspNetCoreApp;User Id=sa;Password=Admin@1234;TrustServerCertificate=True;
 
+  my_sql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: markloh
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: dodik
+      MYSQL_PASSWORD: markloh
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # healthcheck:
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 30s
 
   simulator:
     build: ./wifi_sim
     restart: always
     volumes:
      - ./wifi_sim/wifi2ble:/app
-    command: sh -c "python simulator/main.py --desks 10 --port 6000"
+    command: sh -c "python simulator/main.py --desks 50 --port 6000"
     ports:
      - "6000:6000"
   # mssql:
@@ -47,3 +67,8 @@ services:
 
 
 
+
+
+volumes:
+  mysql_data:
+      
