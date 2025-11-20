@@ -11,8 +11,8 @@
 
 <div id="centerDiv">
     <div id="signInUp">
-        <button id="loginBtn" onclick="displaySignIn()">Sign in</button>
-        <button id="signupBtn" class="clear" onclick="displayRegister()">Sign up</button>
+        <button id="loginBtn" class="login-button" onclick="displaySignIn()">Sign in</button>
+        <button id="signupBtn" class="login-button clear" onclick="displayRegister()">Sign up</button>
     </div>
     <form id="loginForm" method="post" asp-page-handler="Login" class="form">
         <label asp-for="LoginForm.UserName"></label>
@@ -28,7 +28,7 @@
             <!--<input type="checkbox" id="rememberMe" name="rememberMe">-->
             <label asp-for="LoginForm.RememberMe">Remember me</label>
         </div>
-        <input class="submitButton blue" type="submit" class="blue" value="Continue">
+        <input class="submitButton blue" type="submit" value="Continue">
     </form>
 
     <form id="signupForm" method="post" asp-page-handler="Register" class="form hidden">
@@ -41,7 +41,7 @@
         <label asp-for="RegisterForm.ConfirmPassword">Confirm Password:</label>
         <input asp-for="RegisterForm.ConfirmPassword" class="form-control textInput">
         <div asp-validation-summary="All" class="text-danger"></div>
-        <input class="submitButton blue" type="submit" class="blue" value="Continue">
+        <input class="submitButton blue" type="submit" value="Continue">
     </form>
 </div>
 @* <div class="row">

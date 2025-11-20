@@ -1,0 +1,254 @@
+﻿@using System.Text.Json
+@using System.Text.Json.Nodes
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text
+@using asp_net_core.Models;
+@inject UserManager<ApplicationUser> ApplicationUser;
+@* @inject RoleManager<IdentityRole> UserRole; *@
+@inject AuthenticationStateProvider AuthStateProvider;
+
+
+<div class="leftDiv">
+    <div class="topbar">
+        <h2>Desks</h2>
+        @*<p>Refresh count: @currentCount</p>*@
+        <button class="btn btn-primary blue" @onclick="StartDataRefresh">
+            <img class="spinner" src="\refresh.svg" alt="Refresh"/>
+        </button>
+    </div>
+    <div class="tableDiv">
+    <table>
+        <thead class="backgrounded">
+            <tr>
+                <th class="id">Id</th>
+                <th class="name">Name</th>
+                <th class="status">Status</th>
+                <th class="errors">Errors</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var i in @deskData)
+            {
+                var id = i.Key;
+                var value = i.Value;
+
+                string? name = null;
+                string? status = "disconnected";
+                int? errorCount = null;
+
+                if (value is not null)
+                {
+                    name = (value["config"]?["name"]??"").ToString();
+                    status = (value["state"]?["status"]??"").ToString().ToLower();
+                    errorCount = value["lastErrors"]?.AsArray().Count();
+                }
+
+                <tr class=@status @onclick="()=>SelectDesk(id)">
+                    <td class="id">@id</td>
+                    <td class="name">@name</td>
+                    <td class="status">@status</td>
+                    <td class="errors">@if (isUserInRole) { <text>@errorCount</text> } else { <p>You are not an admin</p> }</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+</div>
+<div class="rightDiv">
+    @* name, manufacturer, history, graphs, scheduling, reminders, warnings, save-sitting, save-standing, t-height *@
+    @if (selectedDeskId is null || !deskData.ContainsKey(selectedDeskId)){
+        <h2>Select a desk to see details</h2>
+    }
+    else
+    {
+        var SelectedDesk = deskData[selectedDeskId];
+        Console.WriteLine(SelectedDesk.ToJsonString());
+        @**@
+        <h2>@selectedDeskId</h2>
+        <h2>@(SelectedDesk["config"]?["name"] ?? "N/A")</h2>
+        <div>
+            <h3>Advanced details</h3>
+            <details>
+                <summary>Config</summary>
+                <ul>
+                    <li>Name: @(SelectedDesk["config"]?["name"] ?? "N/A")</li>
+                    <li>Manufacturer: @(SelectedDesk["config"]?["manufacturer"] ?? "N/A")</li>
+                </ul>
+            </details>
+            <details>
+                <summary>State</summary>
+                <ul>
+                    <li>Position: @(SelectedDesk["state"]?["position_mm"] ?? "N/A")</li>
+                    <li>Speed: @(SelectedDesk["state"]?["speed_mms"] ?? "N/A")</li>
+                    <li>Status: @(SelectedDesk["state"]?["status"] ?? "N/A")</li>
+                    <li>Position lost: @(SelectedDesk["state"]?["isPositionLost"] ?? "N/A")</li>
+                    <li>Overload Protection up: @(SelectedDesk["state"]?["isOverloadProtectionUp"] ?? "N/A")</li>
+                    <li>Overload Protection down: @(SelectedDesk["state"]?["isOverloadProtectionDown"] ?? "N/A")</li>
+                    <li>Anti Collision On: @(SelectedDesk["state"]?["isAntiCollision"] ?? "N/A")</li>
+                </ul>
+            </details>
+            <details>
+                <summary>Usage</summary>
+                <ul>
+                    <li>Activations Counter: @(SelectedDesk["usage"]?["activationsCounter"] ?? "N/A")</li>
+                    <li>Sit/Stand Counter: @(SelectedDesk["usage"]?["sitStandCounter"] ?? "N/A")</li> @*R.I.P. slavic squat counter*@
+                </ul>
+            </details>
+            <details>
+                <summary>Last errors</summary>
+                <table>
+                    <tr>
+                        <th>time(s)</th>
+                        <th>error code</th>
+                    </tr>
+                    @foreach (var i in SelectedDesk["lastErrors"]?.AsArray() ?? [])
+                    {
+                        <tr>
+                            <td>@i["time_s"]</td>
+                            <td>@i["errorCode"]</td>
+                        </tr>
+                    }
+                </table>
+            </details>
+        </div>
+        <div>
+            <h3>Current Height</h3>
+            <meter min="680" max="1320" value="@(SelectedDesk["state"]?["position_mm"])"></meter>
+            @*<input type="range" min="680" max="1320" value="@(SelectedDesk["state"]?["position_mm"])" disabled>*@
+            <p>@(SelectedDesk["state"]?["speed_mms"]?.ToString() == "0" ? "Still" : "Moving...")</p>
+            <h3>Save Preferred Heights</h3>
+            <form @onsubmit="ChangeHeights" >
+                <label>
+                    Sitting Height:
+                    <InputNumber min="680" @bind-max="heightRangeForm!.UpperHeight" placeholder="Sitting Height" @bind-value="heightRangeForm!.LowerHeight"/> mm
+                </label>
+                <label>
+                    Standing Height:
+                    <InputNumber @bind-min="heightRangeForm!.LowerHeight" max="1320" placeholder="Standing Height" @bind-value="heightRangeForm!.UpperHeight"/> mm
+                </label>
+                <button>Save Heights</button>
+            </form>
+            <h3>Set Height</h3>
+            <form @onsubmit="ChangeHeight">
+                <label>
+                    Set desk height to @SelectedDesk["state"]?["position_mm"]
+                    <InputNumber  placeholder="Input desired Desk Height" @bind-Value="SetDeskHeight"/> mm
+                </label>
+                <button type="submit">Set Height</button>
+                <button>Set Table to Sitting</button>
+                <button>Set Table to Standing</button>
+            </form>
+        </div>
+    }
+</div>
+
+@code {
+    private int currentCount = 0; // Refresh count
+    private string[] deskIds = [];
+    private Dictionary<string, JsonNode> deskData = new();
+    private HttpClient client = new()
+    {
+        BaseAddress = new Uri("http://simulator:6000"),
+        DefaultRequestHeaders = {
+            { "Accept", "application/json" },
+            { "Connection", "Close"}
+        }
+    };
+    private CancellationTokenSource? _cts;
+    private Task? _refreshTask;
+    private System.Threading.Timer timer;
+    private readonly SemaphoreSlim _semaphore = new(1,1);
+
+    private int SetDeskHeight = 0;
+    private string? selectedDeskId;
+    [SupplyParameterFromForm]
+    private DeskHeightRangeForm heightRangeForm { get; set; } = new DeskHeightRangeForm();
+
+    private Boolean isUserInRole = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current authentication state
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var claimsUser = authState.User;
+
+        if (claimsUser.Identity?.IsAuthenticated == true)
+        {
+            // Option A (fast): check the claims principal directly
+            var isInRoleFromClaims = claimsUser.IsInRole("Admin"); // replace "Admin" with your role
+            var _identityUser = await ApplicationUser.GetUserAsync(claimsUser);
+
+            isUserInRole = isInRoleFromClaims;
+            if (_identityUser is not null)
+            {
+                isUserInRole = await ApplicationUser.IsInRoleAsync(_identityUser, "Admin");
+            }
+
+
+        }
+        await StartDataRefresh();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task StartDataRefresh()
+    {
+        var refreshedData = new Timer(async _ => await GetData(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1.5f));
+    }
+
+
+    private async Task GetData()
+    {
+        if (!await _semaphore.WaitAsync(0))
+        {
+            return;
+        }
+        var response = await client.GetAsync("/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks");
+        // deskIds = await response.Content.ReadAsStringAsync() ?? "No content";
+        var content = await response.Content.ReadAsStreamAsync();
+        deskIds = await JsonSerializer.DeserializeAsync<string[]>(content) ?? [];
+        foreach (string desk in deskIds)
+        {
+            await GetDesk(desk);
+        }
+        await InvokeAsync(StateHasChanged);
+
+        _semaphore.Release();
+    }
+
+    private async Task GetDesk(string desk)
+    {
+        var response = await client.GetAsync($"/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks/{desk}");
+        var content = await response.Content.ReadAsStreamAsync();
+        deskData[desk] = await JsonNode.ParseAsync(content);
+    }
+    private void SelectDesk(string deskId)
+    {
+        selectedDeskId = deskId;
+    }
+
+    private async Task ChangeHeights()
+    {
+        Console.WriteLine($"Changing heights to: {heightRangeForm.LowerHeight} - {heightRangeForm.UpperHeight}");
+    }
+
+    private async Task ChangeHeight()
+    {
+        var body =JsonSerializer.Serialize( new { position_mm = SetDeskHeight });
+        var request = await client.PutAsync($"/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks/{selectedDeskId}/state", new StringContent(body, Encoding.UTF8, "application/json"));
+        Console.WriteLine("============================");
+        Console.WriteLine($"{request.StatusCode}\t");
+        Console.WriteLine("============================");
+        
+
+    }
+
+    public class DeskHeightRangeForm
+    {
+        public int LowerHeight { get; set; }
+        public int UpperHeight { get; set; }
+
+    }
+}
