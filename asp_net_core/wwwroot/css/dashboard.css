@@ -19,6 +19,7 @@ main > div {
         border-radius: 1rem;
         margin: .5rem;
         padding: 1rem;
+        overflow: auto;
 }
 
 @media screen and (max-width: 720px) {
@@ -26,7 +27,7 @@ main > div {
         flex-direction: column;
     }
 
-    main > * {
+    main > div {
         width: 100%;
         height: 50%;
     }
@@ -113,16 +114,10 @@ thead {
 }
 
 /* ------------------------------- RIGHT */
-.rightDiv {
-    display:flex;
-    justify-content: center;
-    align-content: center;
+summary > * {
+    display: flex;
 }
 
-/* RANGE SLIDER */
-input[type=range] {
-    transition: 1.5s all linear in;
-}
 /* ------------------------------ MAIN VIEW */
 .display-4 {
     justify-self: center;
