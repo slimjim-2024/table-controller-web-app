@@ -20,7 +20,7 @@
          <span id="menu">
              <ul id="menuLinks">
                  <li class="menuItem">
-                    <a class="nav-link nav-message" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Edit your profile @User.Identity?.Name!</a>
+                    <a class="nav-link nav-message" asp-area="Identity" asp-page="/Account/Manage" title="Manage">Edit your profile @User.Identity?.Name!</a>
                  </li>
                 <li class="menuItem">
                     <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
@@ -32,7 +32,7 @@
     </li>
     @* <li class="nav-item"> *@
     <li class="nav-item">
-        <a class="nav-link nav-message" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+        <a class="nav-link nav-message" asp-area="Identity" asp-page="/Account/Manage" title="Manage">Hello @User.Identity?.Name!</a>
     </li>
     @* </li> *@
     <li class="nav-item">

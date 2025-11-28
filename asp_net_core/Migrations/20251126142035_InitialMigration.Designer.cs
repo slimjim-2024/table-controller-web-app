@@ -11,7 +11,7 @@ using asp_net_core.Data;
 namespace asp_net_core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251027161509_InitialMigration")]
+    [Migration("20251126142035_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />

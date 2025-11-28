@@ -1,9 +1,10 @@
 ﻿using asp_net_core.Data;
+using asp_net_core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace asp_net_core.Models
+namespace asp_net_core.Seeders
 {
     public class ApplicationRoles
     {
@@ -32,9 +33,13 @@ namespace asp_net_core.Models
         }
         public static async Task<IdentityResult> AssignRoles(IServiceProvider services, string userName, string[] roles)
         {
+            IdentityResult result = IdentityResult.Failed();
             var _userManager = services.GetService<UserManager<ApplicationUser>>();
-            ApplicationUser user = await _userManager.FindByNameAsync(userName);
-            var result = await _userManager.AddToRolesAsync(user, roles);
+            ApplicationUser? user = await _userManager.FindByNameAsync(userName);
+            if (user is not null)
+            {
+                result = await _userManager.AddToRolesAsync(user, roles);
+            }
 
             return result;
         }

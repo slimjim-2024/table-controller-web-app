@@ -1,6 +1,7 @@
 using asp_net_core;
 using asp_net_core.Data;
 using asp_net_core.Models;
+using asp_net_core.Seeders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
