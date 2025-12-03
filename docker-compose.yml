@@ -42,7 +42,7 @@ services:
     restart: always
     volumes:
      - ./wifi_sim/wifi2ble:/app
-    command: sh -c "python simulator/main.py --desks 10 --port 6000"
+    command: sh -c "python simulator/main.py --desks 50 --port 6000"
     ports:
      - "6000:6000"
   # mssql:

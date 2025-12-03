@@ -3,20 +3,21 @@
 @{
     ViewData["Title"] = "Login";
 }
-@section Styles {
-    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true"/>
 }
 
-
- <main>
-    <div>
-        <button id="loginBtn" onclick="displaySignIn()">Sign in</button>
-        <button id="signupBtn" class="clear" onclick="displayRegister()">Sign up</button>
+<div id="centerDiv">
+    <div id="signInUp">
+        <button id="loginBtn" class="login-button" onclick="displaySignIn()">Sign in</button>
+        <button id="signupBtn" class="login-button clear" onclick="displayRegister()">Sign up</button>
     </div>
-    <form id="loginForm" method="post" asp-page-handler="Login" class="grid">
+    <form id="loginForm" method="post" asp-page-handler="Login" class="form">
         <label asp-for="LoginForm.UserName"></label>
         <input asp-for="LoginForm.UserName" class="form-control textInput" autocomplete="username" placeholder="" />
-        <label asp-for="LoginForm.Password">Password:</label>
+        <label asp-for="LoginForm.Password">Password</label>
         <!--<input name="password" class="textInput" placeholder="">-->
         <input asp-for="LoginForm.Password" class="form-control textInput" autocomplete="password" />
         <div asp-validation-summary="All" class="text-danger"></div>
@@ -27,10 +28,10 @@
             <!--<input type="checkbox" id="rememberMe" name="rememberMe">-->
             <label asp-for="LoginForm.RememberMe">Remember me</label>
         </div>
-        <input type="submit" class="blue" value="Continue">
+        <input class="submitButton blue" type="submit" value="Continue">
     </form>
 
-    <form id="signupForm" method="post" asp-page-handler="Register" class="grid hidden">
+    <form id="signupForm" method="post" asp-page-handler="Register" class="form hidden">
         <label asp-for="RegisterForm.UserName"></label>
         <input asp-for="RegisterForm.UserName" class="form-control textInput" autocomplete="username" />
         <label asp-for="RegisterForm.Email"></label>
@@ -40,9 +41,9 @@
         <label asp-for="RegisterForm.ConfirmPassword">Confirm Password:</label>
         <input asp-for="RegisterForm.ConfirmPassword" class="form-control textInput">
         <div asp-validation-summary="All" class="text-danger"></div>
-        <input type="submit" class="blue" value="Continue">
+        <input class="submitButton blue" type="submit" value="Continue">
     </form>
-</main>
+</div>
 @* <div class="row">
     <div class="col-md-4">
         <main>
@@ -75,6 +76,7 @@
         </main>
     </div>
 </div> *@
+
 
 
 @section Scripts {

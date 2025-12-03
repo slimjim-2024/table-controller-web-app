@@ -47,7 +47,7 @@ namespace asp_net_core.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("Login successful, redirecting to Home/Index");
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "Home");
             }
 
             if (result.IsLockedOut)
@@ -86,7 +86,7 @@ namespace asp_net_core.Areas.Identity.Pages.Account
             {
                 _logger.LogInformation("User created successfully: {UserName}", RegisterForm.UserName);
                 await _signInManager.SignInAsync(user, isPersistent: RegisterForm.RememberMe);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "Home");
             }
 
             foreach (var error in result.Errors)

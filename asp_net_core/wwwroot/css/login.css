@@ -1,142 +1,69 @@
-body {
-  background-color: white;
-  color: black;
-  font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+main {
+    flex-direction: column;
+}
+
+.submitButton {
+  border-radius: 8px;
+  border-width: 0;
+  cursor: pointer;
+  display: inline-block;
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-body > * {
-    padding: 1rem;
-}
-
-header, footer {
-  position: fixed;
-  display: flex;
-  align-items: center;
-}
-
-header {
-  top: 0;
-  width: 100%;
-}
-
-footer {
-  bottom: 0;
-  width: 100%;
-}
-
-.right {
-  position: fixed;
-  right: 0;
-}
-
-.blue {
-  background-color: #1961ac;
+  padding: 10px 12px;
+  text-align: center;
+  vertical-align: baseline;
+  white-space: nowrap
 }
 
 .warning {
-  color: red;
-  display: none;
+    color: red;
+    display: none;
 }
 
 form, button {
-  background-color: lightgrey;
+    background-color: lightgrey;
+    outline: #121212 3px;
+    transition: .4s;
 }
 
 form {
-  padding: 2rem;
-  box-shadow: 0 4px 6px 2px black;
+    display:flex;
+    padding: 2rem;
+    flex-direction: column;
+}
+
+.login-button {
+    margin-top: 1rem;
+    cursor: pointer;
 }
 
 button {
-  border: none;
-  padding: 1rem 2rem 1px 2rem;
-  border-radius: 0.5rem 0.5rem 0 0;
+    border: none;
+    color: inherit;
+    padding: 1rem 2rem 1px 2rem;
+    border-radius: 0.5rem 0.5rem 0 0;
 }
 
 form.hidden {
-  display: none;
+    display: none;
 }
 
 .clear {
-  background-color: transparent;
-  color: inherit;
-  box-shadow: none;
+    background-color: transparent;
+    color: inherit;
+    box-shadow: none;
 }
 
-.grid {
-  display: grid;
+.signInUpButtons {
+    justify-self: left;
 }
 
-.darkMode {
-  background-color: #121212;
-  color: white;
-}
-.darkMode form {
-  color: black;
+/* ------------------------------- DARK MODE */
+.darkMode main #centerDiv form {
+    background-color: #2e2e2e;
+    transition: .4s;
 }
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+.darkMode main #centerDiv #signInUp button:not(.clear) {
+    background-color: #2e2e2e;
+    transition: .4s;
 }
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: 0.4s;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-/*
-body:has(header:has(#darkModeToggle:checked)) {
-    background-color: #121212;
-    color: white;
-    -webkit-transition: .4s;
-  transition: .4s;
-
-    form {
-        color: black;
-    }
-}
-*//*# sourceMappingURL=style.css.map */

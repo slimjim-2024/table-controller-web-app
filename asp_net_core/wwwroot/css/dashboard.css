@@ -1,0 +1,125 @@
+/* ---------------------------------------- INSIDE MAIN */
+main {
+    flex-direction: row;
+    padding: .5rem;
+}
+
+/*
+main {
+    background-color: tomato;
+}
+*/
+
+main > div {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid black;
+        border-radius: 1rem;
+        margin: .5rem;
+        padding: 1rem;
+        overflow: auto;
+}
+
+@media screen and (max-width: 720px) {
+    main {
+        flex-direction: column;
+    }
+
+    main > div {
+        width: 100%;
+        height: 50%;
+    }
+}
+
+.topbar {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topbar > * {
+    margin: 0;
+}
+
+.spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+/* ------------------------------------------ TABLE */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 .25em;
+}
+
+.tableDiv {
+    flex: 1 1 auto;
+    display: flex;
+    overflow: auto;
+    margin-top: 1rem;
+}
+
+tbody tr {
+    cursor: pointer;
+}
+
+thead {
+    /**/
+    position: sticky;
+    top: 0; /* height of the topbar */
+}
+
+.normal {
+    background-color: lightgrey;
+}
+
+.collision {
+    background-color: coral;
+}
+
+.disconnected {
+    background-color: red;
+}
+
+.backgrouded {
+    transition: .4s;
+}
+
+/* ------------------------------------------ TABLE DARK MODE */
+.darkMode .normal {
+    background-color: dimgrey;
+}
+
+.darkMode .collision {
+    background-color: chocolate;
+}
+
+.darkMode .disconnected {
+    background-color: firebrick;
+}
+
+/* ------------------------------- RIGHT */
+summary > * {
+    display: flex;
+}
+
+/* ------------------------------ MAIN VIEW */
+.display-4 {
+    justify-self: center;
+    align-self: center;
+}
