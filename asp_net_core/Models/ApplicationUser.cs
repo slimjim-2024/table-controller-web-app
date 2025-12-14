@@ -2,10 +2,5 @@
 
 namespace asp_net_core.Models
 {
-    public class ApplicationUser : IdentityUser<Guid>
-    {
-        public byte? Role { get; set; } = 0b00000000;
-
-
-        }
+    public class ApplicationUser : IdentityUser<Guid>{}
 }

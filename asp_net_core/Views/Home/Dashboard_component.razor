@@ -3,10 +3,13 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @using System.Text
+@using Microsoft.EntityFrameworkCore
+@using asp_net_core.Data
 @using asp_net_core.Models;
 @inject UserManager<ApplicationUser> ApplicationUser;
 @* @inject RoleManager<IdentityRole> UserRole; *@
 @inject AuthenticationStateProvider AuthStateProvider;
+@inject ApplicationDbContext _context;
 
 
 <div class="leftDiv">

@@ -1,4 +1,23 @@
 ﻿@page "/Account/Manage"
 @model asp_net_core.Areas.Identity.Pages.Account.ManageModel
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 @{
+
 }
+
+
+<div>
+
+    <p>Set your preferred height:</p>
+    <h1>@ViewData["SuccessMessage"]</h1>
+    <form asp-page-handler="SetPreferredHeight">
+        <label asp-for="PreferredHeight.LowerHeight" />
+        <input asp-for="PreferredHeight.LowerHeight" class="form-control textInput" />
+        <label asp-for="PreferredHeight.UpperHeight" />
+        <input asp-for="PreferredHeight.UpperHeight" class="form-control textInput" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input class="submitButton blue" type="submit" value="Set Preferred Height" />
+    </form>
+</div>

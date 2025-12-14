@@ -13,5 +13,11 @@ namespace asp_net_core.Data
         {
 
         }
-    }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
+        public DbSet<PreferredSettings> PreferredSettings{ get; set; } = default!;
+        }
 }
