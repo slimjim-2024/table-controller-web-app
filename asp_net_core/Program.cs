@@ -2,6 +2,7 @@ using asp_net_core;
 using asp_net_core.Data;
 using asp_net_core.Models;
 using asp_net_core.Seeders;
+using asp_net_core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -12,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Optional: configure Kestrel to use a PFX if configured.
 // Put certificate path and password in configuration (e.g., appsettings.json or environment variables):
 // "Kestrel": { "Certificates": { "Default": { "Path": "certs/servercert.pfx", "Password": "pfxPassword" } } }
+var mosquittoConfig = builder.Configuration.GetSection("MosquittoConfig");
+
 var certPath = builder.Configuration["Kestrel:Certificates:Default:Path"];
 var certPassword = builder.Configuration["Kestrel:Certificates:Default:Password"];
 if (!string.IsNullOrEmpty(certPath))
@@ -46,9 +49,14 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSingleton<MQTT_Service>();
+
 
 var app = builder.Build();
 
+var mqttService = app.Services.GetRequiredService<MQTT_Service>();
+await mqttService.ConnectAsync(mosquittoConfig["BrokerAddress"]!, (int.TryParse(mosquittoConfig["BrokerPort"]!, out int port) ? port : 1883),
+                            mosquittoConfig["Username"], mosquittoConfig["Password"]);
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

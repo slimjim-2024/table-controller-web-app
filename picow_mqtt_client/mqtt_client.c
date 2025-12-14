@@ -204,6 +204,7 @@ static void sub_unsub_topics(MQTT_CLIENT_DATA_T* state, bool sub) {
 }
 static void initialize_pico(MQTT_CLIENT_DATA_T* state) {
     char topic[MQTT_TOPIC_LEN];
+    mqtt_publish(state->mqtt_client_inst, full_topic(state, MQTT_WILL_TOPIC), state->mqtt_client_info.client_id, sizeof(state->mqtt_client_info.client_id) - 1, MQTT_WILL_QOS, true, pub_request_cb, state);
     sprintf(topic, "/checkForTable/%s", state->mqtt_client_info.client_id);
     INFO_printf("Subscribing to topic %s\n", full_topic(state, topic));
     mqtt_request_cb_t cb = sub_request_cb;
@@ -334,12 +335,12 @@ static void get_adc_data_cb(uint gpio, uint32_t events) {
         INFO_printf("No table connected, ignoring ADC value\n");
         return;
     }
-    char payload[4];
+    char payload[5];
  
     sprintf(topic, "/tables/%s/setHeight", connected_table_id);
     INFO_printf("/tables/%s/setHeight", connected_table_id);
 
-    sprintf(payload, "%u", 680 + (int)((float)latest_value/ADC_MAX_VALUE * 660.0f)); // Map 0-4095 to 670-1320mm
+    sprintf(payload, "%d", 680 + (int)((float)latest_value/ADC_MAX_VALUE * 660.0f)); // Map 0-4095 to 670-1320mm
     
     mqtt_publish(client_state->mqtt_client_inst, full_topic(client_state, topic), payload, sizeof(payload), MQTT_PUBLISH_QOS, MQTT_PUBLISH_RETAIN, pub_request_cb, client_state);
     INFO_printf("ADC Value: %u\n", latest_value);
