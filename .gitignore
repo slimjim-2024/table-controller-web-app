@@ -43,3 +43,9 @@
 *.dblwr
 *.cnf
 /mysql_data/*
+/picow_mqtt_client/build/CMakeFiles/picow_mqtt_client.dir
+/picow_mqtt_client/certs
+/picow_mqtt_client/MQTT_Conf
+/mosquitto/log/mqtt.log
+/mosquitto/log/mqtt.log
+/mosquitto/log/mqtt.log

@@ -64,6 +64,18 @@ services:
   #     timeout: 3s
   #     retries: 10
   #     start_period: 10s
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:1883:1883"    # MQTT
+      - "0.0.0.0:8883:8883"    # MQTTS (secure)
+      - "0.0.0.0:9001:9001"    # WebSockets
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
 
 
 

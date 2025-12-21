@@ -18,6 +18,11 @@
 #include "lwip/apps/mqtt_priv.h" // needed to set hostname
 #include "lwip/dns.h"
 #include "lwip/altcp_tls.h"
+#include "hardware/i2c.h"
+#include "ssd1306.h"
+#include "font.h"
+
+static ssd1306_t disp;
 
 // Temperature
 #ifndef TEMPERATURE_UNITS
@@ -37,8 +42,9 @@
 #define MQTT_TOPIC_LEN 100
 #endif
 
-typedef struct {
-    mqtt_client_t* mqtt_client_inst;
+typedef struct
+{
+    mqtt_client_t *mqtt_client_inst;
     struct mqtt_connect_client_info_t mqtt_client_info;
     char data[MQTT_OUTPUT_RINGBUF_SIZE];
     char topic[MQTT_TOPIC_LEN];
@@ -108,6 +114,15 @@ static MQTT_CLIENT_DATA_T *client_state;
 #define ADC_CHANGE_THRESHOLD 4
 static char connected_table_id[MQTT_TOPIC_LEN] = {0};
 
+void draw_height(int height)
+{
+    ssd1306_clear(&disp);
+    char height_buf[20];
+    snprintf(height_buf, sizeof(height_buf), "Height: %dmm", height);
+    ssd1306_draw_string_with_font(&disp, 0, 0, 1, font_8x5, height_buf);
+    ssd1306_show(&disp);
+}
+
 // Call from main (not IRQ) to publish or handle the new value
 // Example placeholder — replace with your mqtt_publish call
 
@@ -131,13 +146,16 @@ static char connected_table_id[MQTT_TOPIC_LEN] = {0};
 //     return -1.0f;
 // }
 
-static void pub_request_cb(__unused void *arg, err_t err) {
-    if (err != 0) {
+static void pub_request_cb(__unused void *arg, err_t err)
+{
+    if (err != 0)
+    {
         ERROR_printf("pub_request_cb failed %d", err);
     }
 }
 
-static const char *full_topic(MQTT_CLIENT_DATA_T *state, const char *name) {
+static const char *full_topic(MQTT_CLIENT_DATA_T *state, const char *name)
+{
 #if MQTT_UNIQUE_TOPIC
     static char full_topic[MQTT_TOPIC_LEN];
     snprintf(full_topic, sizeof(full_topic), "/%s%s", state->mqtt_client_info.client_id, name);
@@ -147,9 +165,10 @@ static const char *full_topic(MQTT_CLIENT_DATA_T *state, const char *name) {
 #endif
 }
 
-static void control_led(MQTT_CLIENT_DATA_T *state, bool on) {
+static void control_led(MQTT_CLIENT_DATA_T *state, bool on)
+{
     // Publish state on /state topic and on/off led board
-    const char* message = on ? "On" : "Off";
+    const char *message = on ? "On" : "Off";
     if (on)
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
     else
@@ -172,44 +191,53 @@ static void control_led(MQTT_CLIENT_DATA_T *state, bool on) {
 //     }
 // }
 
-
-
-static void sub_request_cb(void *arg, err_t err) {
-    MQTT_CLIENT_DATA_T* state = (MQTT_CLIENT_DATA_T*)arg;
-    if (err != 0) {
+static void sub_request_cb(void *arg, err_t err)
+{
+    MQTT_CLIENT_DATA_T *state = (MQTT_CLIENT_DATA_T *)arg;
+    if (err != 0)
+    {
         panic("subscribe request failed %d", err);
     }
     state->subscribe_count++;
 }
 
-static void unsub_request_cb(void *arg, err_t err) {
-    MQTT_CLIENT_DATA_T* state = (MQTT_CLIENT_DATA_T*)arg;
-    if (err != 0) {
+static void unsub_request_cb(void *arg, err_t err)
+{
+    MQTT_CLIENT_DATA_T *state = (MQTT_CLIENT_DATA_T *)arg;
+    if (err != 0)
+    {
         panic("unsubscribe request failed %d", err);
     }
     state->subscribe_count--;
     assert(state->subscribe_count >= 0);
 
     // Stop if requested
-    if (state->subscribe_count <= 0 && state->stop_client) {
+    if (state->subscribe_count <= 0 && state->stop_client)
+    {
         mqtt_disconnect(state->mqtt_client_inst);
     }
 }
 
-static void sub_unsub_topics(MQTT_CLIENT_DATA_T* state, bool sub) {
+static void sub_unsub_topics(MQTT_CLIENT_DATA_T *state, bool sub)
+{
     char topic[MQTT_TOPIC_LEN];
     sprintf(topic, "/checkForTable/%s", state->mqtt_client_info.client_id);
     mqtt_request_cb_t cb = sub ? sub_request_cb : unsub_request_cb;
-
 }
-static void initialize_pico(MQTT_CLIENT_DATA_T* state) {
+static void initialize_pico(MQTT_CLIENT_DATA_T *state)
+{
     char topic[MQTT_TOPIC_LEN];
+    mqtt_publish(state->mqtt_client_inst, full_topic(state, MQTT_WILL_TOPIC), state->mqtt_client_info.client_id, sizeof(state->mqtt_client_info.client_id) - 1, MQTT_WILL_QOS, true, pub_request_cb, state);
     sprintf(topic, "/checkForTable/%s", state->mqtt_client_info.client_id);
     INFO_printf("Subscribing to topic %s\n", full_topic(state, topic));
     mqtt_request_cb_t cb = sub_request_cb;
     mqtt_sub_unsub(state->mqtt_client_inst, full_topic(state, topic), MQTT_SUBSCRIBE_QOS, cb, state, true);
 }
-static void initialize_dashboard(MQTT_CLIENT_DATA_T* state, u16_t len, const u8_t* data) {
+static void initialize_dashboard(MQTT_CLIENT_DATA_T *state, u16_t len, const u8_t *data)
+{
+    ssd1306_clear(&disp);
+    ssd1306_draw_string_with_font(&disp, 0, 0, 1, font_8x5, "Connected!");
+    ssd1306_show(&disp);
     char topic[MQTT_TOPIC_LEN];
     snprintf(topic, sizeof(topic), "/tables/%s/height", data);
     INFO_printf("Subscribing to topic %s\n", full_topic(state, topic));
@@ -218,13 +246,15 @@ static void initialize_dashboard(MQTT_CLIENT_DATA_T* state, u16_t len, const u8_
     snprintf(topic, sizeof(topic), "/checkForTable/%s", state->mqtt_client_info.client_id);
     mqtt_unsubscribe(state->mqtt_client_inst, full_topic(state, topic), unsub_request_cb, state);
     INFO_printf("Unsubscribing from topic %s\n", full_topic(state, topic));
-
 }
 
-static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags) {
-    MQTT_CLIENT_DATA_T* state = (MQTT_CLIENT_DATA_T*)arg;
-        char topic[MQTT_TOPIC_LEN];
+static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags)
+{
+    MQTT_CLIENT_DATA_T *state = (MQTT_CLIENT_DATA_T *)arg;
+    char topic[MQTT_TOPIC_LEN];
+    char height_topic[MQTT_TOPIC_LEN];
     sprintf(topic, "/checkForTable/%s", state->mqtt_client_info.client_id);
+    sprintf(height_topic, "/tables/%s/height", connected_table_id);
 #if MQTT_UNIQUE_TOPIC
     const char *basic_topic = state->topic + strlen(state->mqtt_client_info.client_id) + 1;
 #else
@@ -235,24 +265,21 @@ static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t f
     state->data[len] = '\0';
 
     INFO_printf("Topic: %s, Message: %s\n", state->topic, state->data);
-    if (strcmp(basic_topic, topic) == 0) {
-        INFO_printf("Received table check message: %.*s\nDashboard Init in progress\n", len, data);
+    if (strcmp(basic_topic, topic) == 0)
+    {
         initialize_dashboard(state, len, data);
-
-    } else if (strcmp(basic_topic, "/print") == 0) {
-        INFO_printf("%.*s\n", len, data);
-    } else if (strcmp(basic_topic, "/ping") == 0) {
-        char buf[11];
-        snprintf(buf, sizeof(buf), "%u", to_ms_since_boot(get_absolute_time()) / 1000);
-        mqtt_publish(state->mqtt_client_inst, full_topic(state, "/uptime"), buf, strlen(buf), MQTT_PUBLISH_QOS, MQTT_PUBLISH_RETAIN, pub_request_cb, state);
-    } else if (strcmp(basic_topic, "/exit") == 0) {
-        state->stop_client = true; // stop the client when ALL subscriptions are stopped
-        sub_unsub_topics(state, false); // unsubscribe
+        return;
+    }
+    if (strcmp(basic_topic, height_topic) == 0)
+    {
+        draw_height(atoi(state->data));
+        return;
     }
 }
 
-static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len) {
-    MQTT_CLIENT_DATA_T* state = (MQTT_CLIENT_DATA_T*)arg;
+static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len)
+{
+    MQTT_CLIENT_DATA_T *state = (MQTT_CLIENT_DATA_T *)arg;
     strncpy(state->topic, topic, sizeof(state->topic));
 }
 
@@ -263,31 +290,39 @@ static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len
 // }
 // static async_at_time_worker_t temperature_worker = { .do_work = temperature_worker_fn };
 
-static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status) {
-    MQTT_CLIENT_DATA_T* state = (MQTT_CLIENT_DATA_T*)arg;
-    if (status == MQTT_CONNECT_ACCEPTED) {
+static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status)
+{
+    MQTT_CLIENT_DATA_T *state = (MQTT_CLIENT_DATA_T *)arg;
+    if (status == MQTT_CONNECT_ACCEPTED)
+    {
         state->connect_done = true;
         initialize_pico(state); // subscribe;
 
         // indicate online
-        if (state->mqtt_client_info.will_topic) {
+        if (state->mqtt_client_info.will_topic)
+        {
             mqtt_publish(state->mqtt_client_inst, state->mqtt_client_info.will_topic, state->mqtt_client_info.client_id, sizeof(state->mqtt_client_info.client_id) - 1, MQTT_WILL_QOS, true, pub_request_cb, state);
         }
 
         // Publish temperature every 10 sec if it's changed
         // temperature_worker.user_data = state;
         // async_context_add_at_time_worker_in_ms(cyw43_arch_async_context(), &temperature_worker, 0);
-    } else if (status == MQTT_CONNECT_DISCONNECTED) {
-        if (!state->connect_done) {
+    }
+    else if (status == MQTT_CONNECT_DISCONNECTED)
+    {
+        if (!state->connect_done)
+        {
             panic("Failed to connect to mqtt server");
         }
     }
-    else {
+    else
+    {
         panic("Unexpected status");
     }
 }
 
-static void start_client(MQTT_CLIENT_DATA_T *state) {
+static void start_client(MQTT_CLIENT_DATA_T *state)
+{
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
     const int port = MQTT_TLS_PORT;
     INFO_printf("Using TLS\n");
@@ -297,14 +332,16 @@ static void start_client(MQTT_CLIENT_DATA_T *state) {
 #endif
 
     state->mqtt_client_inst = mqtt_client_new();
-    if (!state->mqtt_client_inst) {
+    if (!state->mqtt_client_inst)
+    {
         panic("MQTT client instance creation error");
     }
     INFO_printf("IP address of this device %s\n", ipaddr_ntoa(&(netif_list->ip_addr)));
     INFO_printf("Connecting to mqtt server at %s\n", ipaddr_ntoa(&state->mqtt_server_address));
 
     cyw43_arch_lwip_begin();
-    if (mqtt_client_connect(state->mqtt_client_inst, &state->mqtt_server_address, port, mqtt_connection_cb, state, &state->mqtt_client_info) != ERR_OK) {
+    if (mqtt_client_connect(state->mqtt_client_inst, &state->mqtt_server_address, port, mqtt_connection_cb, state, &state->mqtt_client_info) != ERR_OK)
+    {
         panic("MQTT broker connection error");
     }
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
@@ -316,108 +353,134 @@ static void start_client(MQTT_CLIENT_DATA_T *state) {
 }
 
 // Call back with a DNS result
-static void dns_found(const char *hostname, const ip_addr_t *ipaddr, void *arg) {
-    MQTT_CLIENT_DATA_T *state = (MQTT_CLIENT_DATA_T*)arg;
-    if (ipaddr) {
+static void dns_found(const char *hostname, const ip_addr_t *ipaddr, void *arg)
+{
+    MQTT_CLIENT_DATA_T *state = (MQTT_CLIENT_DATA_T *)arg;
+    if (ipaddr)
+    {
         state->mqtt_server_address = *ipaddr;
         start_client(state);
-    } else {
+    }
+    else
+    {
         panic("dns request failed");
     }
 }
 
-static void get_adc_data_cb(uint gpio, uint32_t events) {
-    // Read the latest ADC value from the DMA buffer
-    uint16_t latest_value = adc_dma_buf[(ADC_DMA_BUF_LEN - 1)];
-    char topic[MQTT_TOPIC_LEN];
-    if (connected_table_id == NULL || connected_table_id[0] == '\0') {
-        INFO_printf("No table connected, ignoring ADC value\n");
-        return;
-    }
-    char payload[4];
- 
-    sprintf(topic, "/tables/%s/setHeight", connected_table_id);
-    INFO_printf("/tables/%s/setHeight", connected_table_id);
+static void adc_dma_irq_handler();
 
-    sprintf(payload, "%u", 680 + (int)((float)latest_value/ADC_MAX_VALUE * 660.0f)); // Map 0-4095 to 670-1320mm
-    
-    mqtt_publish(client_state->mqtt_client_inst, full_topic(client_state, topic), payload, sizeof(payload), MQTT_PUBLISH_QOS, MQTT_PUBLISH_RETAIN, pub_request_cb, client_state);
-    INFO_printf("ADC Value: %u\n", latest_value);
-
-
-}
-
-static void adc_dma_irq_handler() {
-    // clear IRQ for this channel
-    dma_hw->ints0 = 1u << adc_dma_chan;
-
-    // simply restart the DMA transfer so the buffer is refilled
-    dma_channel_configure(adc_dma_chan, &adc_dma_cfg,
-                          adc_dma_buf,            // dst
-                          &adc_hw->fifo,          // src (ADC FIFO)
-                          ADC_DMA_BUF_LEN,        // transfer count
-                          true);                  // start immediately
-}
-
-static void adc_dma_init(void) {
-    // Ensure ADC GPIO is prepared (GP26 -> ADC0). adc_select_input(0) is called in main,
-    // but initializing the GPIO here is safe/redundant.
+static void adc_dma_init(void)
+{
     adc_gpio_init(26);
+    adc_init();
+    adc_select_input(0);
+    adc_set_clkdiv(0); // Run at max speed
 
-    // Configure ADC FIFO: enable FIFO, enable IRQ (not used), DREQ threshold = 1, no error
-    adc_fifo_setup(true, true, 1, false, false);
+    adc_fifo_setup(
+        true,  // Write each conversion to the FIFO
+        true,  // Enable DMA data request (DREQ)
+        1,     // DREQ is asserted when FIFO contains at least 1 sample
+        false, // Disable error bit
+        false  // Don't shift samples
+    );
 
-    // Start free-running conversions
-    adc_run(true);
-
-    // Claim a DMA channel
     adc_dma_chan = dma_claim_unused_channel(true);
     adc_dma_cfg = dma_channel_get_default_config(adc_dma_chan);
 
-    // Configure DMA: 16-bit transfers, read from fixed ADC FIFO, write to incrementing RAM,
-    // paced by ADC DREQ.
     channel_config_set_transfer_data_size(&adc_dma_cfg, DMA_SIZE_16);
     channel_config_set_read_increment(&adc_dma_cfg, false);
     channel_config_set_write_increment(&adc_dma_cfg, true);
     channel_config_set_dreq(&adc_dma_cfg, DREQ_ADC);
 
-    // Configure and start the channel to continually fill adc_dma_buf
     dma_channel_configure(adc_dma_chan, &adc_dma_cfg,
-                          adc_dma_buf,          // dst
-                          &adc_hw->fifo,        // src
-                          ADC_DMA_BUF_LEN,      // transfer count
-                          true);                // start immediately
+                          adc_dma_buf,
+                          &adc_hw->fifo,
+                          ADC_DMA_BUF_LEN,
+                          false); // Don't start yet
 
-    // Enable IRQ for this channel and attach handler (handler restarts the transfer)
     dma_channel_set_irq0_enabled(adc_dma_chan, true);
     irq_set_exclusive_handler(DMA_IRQ_0, adc_dma_irq_handler);
     irq_set_enabled(DMA_IRQ_0, true);
+
+    dma_channel_start(adc_dma_chan);
+    adc_run(true); // Start free-running conversion
 }
 
-int main(void) {
+static void adc_dma_irq_handler()
+{
+    // Clear the interrupt request
+    dma_hw->ints0 = 1u << adc_dma_chan;
+
+    // Calculate average of the buffer
+    uint32_t sum = 0;
+    for (int i = 0; i < ADC_DMA_BUF_LEN; i++)
+    {
+        sum += adc_dma_buf[i];
+    }
+    uint16_t latest_value = sum / ADC_DMA_BUF_LEN;
+
+    // Restart the DMA transfer
+    dma_channel_set_write_addr(adc_dma_chan, adc_dma_buf, true);
+
+    char topic[MQTT_TOPIC_LEN];
+    if (connected_table_id == NULL || connected_table_id[0] == '\0')
+    {
+        // INFO_printf("No table connected, ignoring ADC value\n");
+        return;
+    }
+    char payload[6];
+
+    sprintf(topic, "/tables/%s/setHeight", connected_table_id);
+
+    if (latest_value < 20)
+        latest_value = 20;
+    if (latest_value > 4095)
+        latest_value = 4095;
+
+    float scaled_value = (float)(latest_value - 20) / (4095.0f - 20.0f);
+    int height = 680 + (int)(scaled_value * (1320.0f - 680.0f));
+
+    // Debounce/filter: only publish if the value has changed significantly
+    if (abs(height - adc_last_published) > ADC_CHANGE_THRESHOLD)
+    {
+        adc_last_published = height;
+        sprintf(payload, "%d", height); // Map 0-4095 to 680-1320mm
+        mqtt_publish(client_state->mqtt_client_inst, full_topic(client_state, topic), payload, strlen(payload), MQTT_PUBLISH_QOS, MQTT_PUBLISH_RETAIN, pub_request_cb, client_state);
+        INFO_printf("ADC: %u, Height: %dmm\n", latest_value, height);
+        draw_height(height);
+    }
+}
+
+int main(void)
+{
     stdio_init_all();
-    INFO_printf("mqtt client starting\n");
-    gpio_init(10);
-    gpio_set_dir(10, GPIO_IN);
-    gpio_pull_up(10);
-
-    gpio_set_irq_enabled_with_callback(10, GPIO_IRQ_EDGE_FALL, true, get_adc_data_cb);
-
-    adc_init();
-    // adc_set_temp_sensor_enabled(true);
-    adc_select_input(0);
-
-    adc_dma_init();
-    static MQTT_CLIENT_DATA_T state;
-
-    if (cyw43_arch_init()) {
-        panic("Failed to inizialize CYW43");
+    if (cyw43_arch_init())
+    {
+        panic("failed to initialise");
     }
 
+    adc_dma_init();
+
+    i2c_init(i2c0, 400 * 1000);
+    gpio_set_function(4, GPIO_FUNC_I2C);
+    gpio_set_function(5, GPIO_FUNC_I2C);
+    gpio_pull_up(4);
+    gpio_pull_up(5);
+    ssd1306_init(&disp, 128, 64, 0x3C, i2c0);
+    ssd1306_clear(&disp);
+    ssd1306_draw_string_with_font(&disp, 0, 0, 1, font_8x5, "Waiting for");
+    ssd1306_draw_string_with_font(&disp, 0, 10, 1, font_8x5, "Connection...");
+    ssd1306_show(&disp);
+
+    // Get unique board ID
+    char board_id_str[2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 1];
+    pico_get_unique_board_id_string(board_id_str, sizeof(board_id_str));
+
     // Use board unique id
-    char unique_id_buf[5];
+    char unique_id_buf[8];
     pico_get_unique_board_id_string(unique_id_buf, sizeof(unique_id_buf));
-    for(int i=0; i < sizeof(unique_id_buf) - 1; i++) {
+    for (int i = 0; i < sizeof(unique_id_buf) - 1; i++)
+    {
         unique_id_buf[i] = tolower(unique_id_buf[i]);
     }
 
@@ -428,6 +491,7 @@ int main(void) {
     client_id_buf[sizeof(client_id_buf) - 1] = 0;
     INFO_printf("Device name %s\n", client_id_buf);
 
+    static MQTT_CLIENT_DATA_T state;
     state.mqtt_client_info.client_id = client_id_buf;
     state.mqtt_client_info.keep_alive = MQTT_KEEP_ALIVE_S; // Keep alive in sec
 #if defined(MQTT_USERNAME) && defined(MQTT_PASSWORD)
@@ -452,7 +516,7 @@ int main(void) {
     static const uint8_t client_cert[] = TLS_CLIENT_CERT;
     // This confirms the indentity of the server and the client
     state.mqtt_client_info.tls_config = altcp_tls_create_config_client_2wayauth(ca_cert, sizeof(ca_cert),
-            client_key, sizeof(client_key), NULL, 0, client_cert, sizeof(client_cert));
+                                                                                client_key, sizeof(client_key), NULL, 0, client_cert, sizeof(client_cert));
 #if ALTCP_MBEDTLS_AUTHMODE != MBEDTLS_SSL_VERIFY_REQUIRED
     WARN_printf("Warning: tls without verification is insecure\n");
 #endif
@@ -463,7 +527,8 @@ int main(void) {
 #endif
 
     cyw43_arch_enable_sta_mode();
-    if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+    if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000))
+    {
         panic("Failed to connect");
     }
     INFO_printf("\nConnected to Wifi\n");
@@ -474,14 +539,18 @@ int main(void) {
     int err = dns_gethostbyname(MQTT_SERVER, &state.mqtt_server_address, dns_found, &state);
     cyw43_arch_lwip_end();
 
-    if (err == ERR_OK) {
+    if (err == ERR_OK)
+    {
         // We have the address, just start the client
         start_client(&state);
-    } else if (err != ERR_INPROGRESS) { // ERR_INPROGRESS means expect a callback
+    }
+    else if (err != ERR_INPROGRESS)
+    { // ERR_INPROGRESS means expect a callback
         panic("dns request failed");
     }
 
-    while (!state.connect_done || mqtt_client_is_connected(state.mqtt_client_inst)) {
+    while (!state.connect_done || mqtt_client_is_connected(state.mqtt_client_inst))
+    {
         cyw43_arch_poll();
         cyw43_arch_wait_for_work_until(make_timeout_time_ms(10000));
     }

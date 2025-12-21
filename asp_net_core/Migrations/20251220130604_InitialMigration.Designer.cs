@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using asp_net_core.Data;
@@ -11,7 +12,7 @@ using asp_net_core.Data;
 namespace asp_net_core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251027161509_InitialMigration")]
+    [Migration("20251220130604_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -21,6 +22,8 @@ namespace asp_net_core.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
@@ -55,6 +58,8 @@ namespace asp_net_core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("ClaimType")
                         .HasColumnType("longtext");
 
@@ -76,6 +81,8 @@ namespace asp_net_core.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("longtext");
@@ -176,7 +183,7 @@ namespace asp_net_core.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -194,9 +201,6 @@ namespace asp_net_core.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<byte?>("Role")
-                        .HasColumnType("tinyint unsigned");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
@@ -218,6 +222,35 @@ namespace asp_net_core.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("asp_net_core.Models.PicoAssignment", b =>
+                {
+                    b.Property<string>("TableID")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ConnectedPico")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("TableID");
+
+                    b.ToTable("PicoAssignment");
+                });
+
+            modelBuilder.Entity("asp_net_core.Models.PreferredSettings", b =>
+                {
+                    b.Property<Guid>("User")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("LowerHeight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UpperHeight")
+                        .HasColumnType("int");
+
+                    b.HasKey("User");
+
+                    b.ToTable("PreferredSettings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -269,6 +302,17 @@ namespace asp_net_core.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("asp_net_core.Models.PreferredSettings", b =>
+                {
+                    b.HasOne("asp_net_core.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("User")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 #pragma warning restore 612, 618
         }

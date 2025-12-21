@@ -28,17 +28,17 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
+
 project(picow_mqtt_client C CXX ASM)
 
-set(MQTT_SERVER "10.151.252.201") # Change this to the host name of your MQTT server
+# Initialise the Raspberry Pi Pico SDK (after project)
+pico_sdk_init()
 
-set(WIFI_SSID "Vlad's Galaxy S23+")
-set(WIFI_PASSWORD "superhacks")
+set(MQTT_SERVER "10.76.86.199") # Change this to the host name of your MQTT server
+set(WIFI_SSID "Suchenki")
+set(WIFI_PASSWORD "Mud1laBlya")
 set(MQTT_USERNAME "PICOUSER")
 set(MQTT_PASSWORD "PicoPass1234!")
-
-# Initialise the Raspberry Pi Pico SDK
-pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
@@ -79,6 +79,7 @@ endif()
 
 add_executable(picow_mqtt_client
     mqtt_client.c
+    ssd1306.c
     )
 target_link_libraries(picow_mqtt_client
     pico_stdlib
@@ -87,6 +88,7 @@ target_link_libraries(picow_mqtt_client
     pico_lwip_mqtt
     pico_mbedtls
     pico_lwip_mbedtls
+    hardware_i2c
     )
 target_include_directories(picow_mqtt_client PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}

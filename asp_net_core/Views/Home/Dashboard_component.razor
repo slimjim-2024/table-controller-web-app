@@ -3,16 +3,31 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @using System.Text
-@using asp_net_core.Models;
+@using Microsoft.EntityFrameworkCore
+@using asp_net_core.Data
+@using asp_net_core.Models
+@using asp_net_core.Seeders
+@using asp_net_core.Services
+@using Microsoft.JSInterop
 @inject UserManager<ApplicationUser> ApplicationUser;
 @* @inject RoleManager<IdentityRole> UserRole; *@
 @inject AuthenticationStateProvider AuthStateProvider;
+@inject ApplicationDbContext _context;
+@inject asp_net_core.Services.MQTT_Service _mqtt_service;
+@inject asp_net_core.Services.ConfigService configService;
+@inject asp_net_core.Services.PersistenceService persistanceService;
+@inject IJSRuntime _jsRuntime;
+
 
 
 <div class="leftDiv">
     <div class="topbar">
         <h2>Desks</h2>
         @*<p>Refresh count: @currentCount</p>*@
+        @if (!isUserInRole && allowRoleRetrieval)
+        {
+            <button class=" btn-primary btn blue" @onclick="HandleGetAdmin"> Missing admin Priviledges?</button>            
+        }
         <button class="btn btn-primary blue" @onclick="StartDataRefresh">
             <img class="spinner" src="\refresh.svg" alt="Refresh"/>
         </button>
@@ -24,8 +39,11 @@
                 <th class="id">Id</th>
                 <th class="name">Name</th>
                 <th class="status">Status</th>
-                <th class="errors">Errors</th>
-            </tr>
+                    @if (isUserInRole)
+                    {
+                        <th class="errors">Errors</th>            
+                    }
+                </tr>
         </thead>
         <tbody>
             @foreach(var i in @deskData)
@@ -48,7 +66,10 @@
                     <td class="id">@id</td>
                     <td class="name">@name</td>
                     <td class="status">@status</td>
-                    <td class="errors">@if (isUserInRole) { <text>@errorCount</text> } else { <p>You are not an admin</p> }</td>
+                        @if (isUserInRole)
+                        {
+                            <td class="errors"> @errorCount</td>
+                        }
                 </tr>
             }
         </tbody>
@@ -95,30 +116,47 @@
                     <li>Sit/Stand Counter: @(SelectedDesk["usage"]?["sitStandCounter"] ?? "N/A")</li> @*R.I.P. slavic squat counter*@
                 </ul>
             </details>
-            <details>
-                <summary>Last errors</summary>
-                <table>
-                    <tr>
-                        <th>time(s)</th>
-                        <th>error code</th>
-                    </tr>
-                    @foreach (var i in SelectedDesk["lastErrors"]?.AsArray() ?? [])
-                    {
+            @if (isUserInRole){
+                <details>
+                    <summary>Last errors</summary>
+                    <table>
                         <tr>
-                            <td>@i["time_s"]</td>
-                            <td>@i["errorCode"]</td>
+                            <th>time(s)</th>
+                            <th>error code</th>
                         </tr>
-                    }
-                </table>
-            </details>
+                        @foreach (var i in SelectedDesk["lastErrors"]?.AsArray() ?? [])
+                        {
+                            <tr>
+                                <td>@i["time_s"]</td>
+                                <td>@i["errorCode"]</td>
+                            </tr>
+                        }
+                    </table>
+                </details>
+                <details>
+                    <summary>Connect a pico to this table</summary>
+                    <form @onsubmit="ConnectPicoToTable">  
+                        <label>Pico ID:
+
+                            <InputSelect placeholder="Pico ID" @bind-Value="_selectedPico">
+                                @foreach( var i in _availablePicos)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </InputSelect>
+                        </label>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                </details>
+            }
         </div>
         <div>
             <h3>Current Height</h3>
             <meter min="680" max="1320" value="@(SelectedDesk["state"]?["position_mm"])"></meter>
             @*<input type="range" min="680" max="1320" value="@(SelectedDesk["state"]?["position_mm"])" disabled>*@
             <p>@(SelectedDesk["state"]?["speed_mms"]?.ToString() == "0" ? "Still" : "Moving...")</p>
-            <h3>Save Preferred Heights</h3>
-            <form @onsubmit="ChangeHeights" >
+            @* <h3>Save Preferred Heights</h3>
+             <form @onsubmit="ChangeHeights" >
                 <label>
                     Sitting Height:
                     <InputNumber min="680" @bind-max="heightRangeForm!.UpperHeight" placeholder="Sitting Height" @bind-value="heightRangeForm!.LowerHeight"/> mm
@@ -128,25 +166,28 @@
                     <InputNumber @bind-min="heightRangeForm!.LowerHeight" max="1320" placeholder="Standing Height" @bind-value="heightRangeForm!.UpperHeight"/> mm
                 </label>
                 <button>Save Heights</button>
-            </form>
+            </form> *@
             <h3>Set Height</h3>
             <form @onsubmit="ChangeHeight">
                 <label>
                     Set desk height to @SelectedDesk["state"]?["position_mm"]
                     <InputNumber  placeholder="Input desired Desk Height" @bind-Value="SetDeskHeight"/> mm
                 </label>
-                <button type="submit">Set Height</button>
-                <button>Set Table to Sitting</button>
-                <button>Set Table to Standing</button>
+                <button type="submit" class="btn btn-primary blue">Set Height</button>
             </form>
+            @if (_hasPreferredHeights){
+                <button @onclick="SetSittingHeight" class="btn btn-primary blue">Set Table to Sitting</button>
+                <button @onclick="SetStandingHeight" class="btn btn-primary blue">Set Table to Standing</button>
+            }
+            else
+            {
+                <h1>Click on your user to set your preferred heights</h1>
+            }
         </div>
     }
 </div>
 
 @code {
-    private int currentCount = 0; // Refresh count
-    private string[] deskIds = [];
-    private Dictionary<string, JsonNode> deskData = new();
     private HttpClient client = new()
     {
         BaseAddress = new Uri("http://simulator:6000"),
@@ -155,17 +196,34 @@
             { "Connection", "Close"}
         }
     };
+
+    private string[] deskIds = [];
+    private Dictionary<string, JsonNode?> deskData = new();
+
+    private string[] _availablePicos = [];
+
+    private bool allowRoleRetrieval = false;
+
     private CancellationTokenSource? _cts;
     private Task? _refreshTask;
+
     private System.Threading.Timer timer;
+
+    private ApplicationUser User;
+
     private readonly SemaphoreSlim _semaphore = new(1,1);
 
     private int SetDeskHeight = 0;
     private string? selectedDeskId;
     [SupplyParameterFromForm]
+    private string _selectedPico { get; set; } = "";
+
+    [SupplyParameterFromForm]
     private DeskHeightRangeForm heightRangeForm { get; set; } = new DeskHeightRangeForm();
 
+
     private Boolean isUserInRole = false;
+    private bool _hasPreferredHeights = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -173,22 +231,29 @@
         // Get the current authentication state
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var claimsUser = authState.User;
-
         if (claimsUser.Identity?.IsAuthenticated == true)
         {
-            // Option A (fast): check the claims principal directly
-            var isInRoleFromClaims = claimsUser.IsInRole("Admin"); // replace "Admin" with your role
+            var isInRoleFromClaims = claimsUser.IsInRole("Admin"); 
             var _identityUser = await ApplicationUser.GetUserAsync(claimsUser);
 
             isUserInRole = isInRoleFromClaims;
             if (_identityUser is not null)
             {
+                User = _identityUser;
                 isUserInRole = await ApplicationUser.IsInRoleAsync(_identityUser, "Admin");
             }
 
 
         }
+        _hasPreferredHeights = await Task.Run<bool>(async() =>
+        {
+            return await _context.PreferredSettings.FindAsync(User.Id) is not null;
+        });
+
+        allowRoleRetrieval = configService.CanGetAdmin;
         await StartDataRefresh();
+        _mqtt_service.OnDeskMoveReceived += HandleDeskHeightChangeReceive;
+        _mqtt_service.OnPicoConnected += (pico => _availablePicos.Append(pico));
 
         await base.OnInitializedAsync();
     }
@@ -198,6 +263,14 @@
         var refreshedData = new Timer(async _ => await GetData(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1.5f));
     }
 
+
+    private async Task HandleGetAdmin()
+    {
+        string pass = await _jsRuntime.InvokeAsync<string>("prompt", "What is the Super Password for completing this action");
+        var result = await ApplicationRoles.AssignRoles(ApplicationUser, User, new[] { "Admin" }, pass);
+        Console.WriteLine(result);
+
+    }
 
     private async Task GetData()
     {
@@ -236,12 +309,71 @@
 
     private async Task ChangeHeight()
     {
+        if (SetDeskHeight > 1320 || SetDeskHeight < 680) return;
+        if (selectedDeskId is null || !deskData.ContainsKey(selectedDeskId)) return;
+
         var body =JsonSerializer.Serialize( new { position_mm = SetDeskHeight });
         var request = await client.PutAsync($"/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks/{selectedDeskId}/state", new StringContent(body, Encoding.UTF8, "application/json"));
         Console.WriteLine("============================");
         Console.WriteLine($"{request.StatusCode}\t");
         Console.WriteLine("============================");
-        
+    }
+
+    private async Task SetSittingHeight()
+    {
+        var setting = await _context.PreferredSettings.FindAsync(User.Id);
+        if (setting is null) return;
+        SetDeskHeight = setting.LowerHeight;
+        await ChangeHeight();
+    }
+    private async Task SetStandingHeight()
+    {
+        var setting = await _context.PreferredSettings.FindAsync(User.Id);
+        if (setting is null) return;
+        SetDeskHeight = setting.UpperHeight;
+        await ChangeHeight();   
+    }
+
+
+    private async Task ConnectPicoToTable()
+    {
+        if (selectedDeskId is null || !deskData.ContainsKey(selectedDeskId) || _selectedPico is null || _selectedPico == "") return;
+
+        var existingAssignment = await _context.PicoAssignment.SingleOrDefaultAsync(pa => pa.ConnectedPico == _selectedPico);
+        if (existingAssignment is not null)
+        {
+            _context.PicoAssignment.Remove(existingAssignment);
+        }
+
+        var existingEntry = await _context.PicoAssignment.FindAsync(selectedDeskId);
+        if (existingEntry is not null)
+        {
+            existingEntry.ConnectedPico = _selectedPico;
+        }
+        else
+        {
+            var newAssignment = new PicoAssignment
+            {
+                TableID = selectedDeskId,
+                ConnectedPico = _selectedPico
+            };
+            await _context.PicoAssignment.AddAsync(newAssignment);
+        }
+        await _context.SaveChangesAsync();
+        return;
+    }
+
+    public async void HandleDeskHeightChangeReceive(string tableID, int height)
+    {
+        if (height > 1320 || height < 680) return;
+        if (!deskData.ContainsKey(tableID)) return;
+
+        var body = JsonSerializer.Serialize(new { position_mm = height });
+        var request = await client.PutAsync($"/api/v2/F7H1vM3kQ5rW8zT9xG2pJ6nY4dL0aZ3K/desks/{tableID}/state", new StringContent(body, Encoding.UTF8, "application/json"));
+        Console.WriteLine("============================");
+        Console.WriteLine($"{request.StatusCode}\t");
+        Console.WriteLine("============================");
+
 
     }
 

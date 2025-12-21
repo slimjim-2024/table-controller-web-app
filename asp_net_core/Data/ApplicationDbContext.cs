@@ -13,5 +13,13 @@ namespace asp_net_core.Data
         {
 
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            //builder.Entity<PicoAssignment>().HasNoKey();
+            base.OnModelCreating(builder);
+        }
+        public DbSet<PreferredSettings> PreferredSettings{ get; set; } = default!;
+        public DbSet<PicoAssignment> PicoAssignment { get; set; } = default!;
     }
 }
