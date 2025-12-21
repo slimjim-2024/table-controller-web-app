@@ -1,32 +1,43 @@
 using asp_net_core.Data;
 using asp_net_core.Models;
+using asp_net_core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto;
+using Microsoft.JSInterop;
+
+//using Org.BouncyCastle.Crypto;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+
 
 namespace asp_net_core.Areas.Identity.Pages.Account
 {
     public class ManageModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly IJSRuntime _runtime;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ConfigService _configService;
 
         private static int MAX_HEIGHT = 1320;
         private static int MIN_HEIGHT = 680;
-        public ManageModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ManageModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ConfigService configService)
         {
             _userManager = userManager;
             _context = context;
+            _configService = configService;
+            PreferredHeight = new HeightChangeForm();
         }
         [BindProperty]
         public HeightChangeForm PreferredHeight { get; set; }
         public async Task OnGetAsync()
         {
             var userID = Guid.TryParse(_userManager.GetUserId(User), out Guid parsedGuid) ? parsedGuid : Guid.Empty;
+            var hasAdminRole = await _userManager.IsInRoleAsync(await _userManager.GetUserAsync(User), "Admin");
+            ViewData["IsAdmin"] = hasAdminRole;
+            ViewData["IsClamingOpen"] = _configService.CanGetAdmin;
             var existingSettings = await _context.PreferredSettings.FindAsync(userID);
             PreferredHeight = (existingSettings is not null) ? new HeightChangeForm
             {
@@ -34,6 +45,12 @@ namespace asp_net_core.Areas.Identity.Pages.Account
                 UpperHeight = existingSettings.UpperHeight
             } : new();
             
+        }
+
+        public async Task<IActionResult> OnPostCloseAdminRetrievalAsync()
+        {
+            _configService.CanGetAdmin= false;
+            return RedirectToPage();
         }
 
 

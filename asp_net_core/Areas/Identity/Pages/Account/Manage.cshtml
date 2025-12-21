@@ -7,7 +7,6 @@
 
 }
 
-
 <div>
 
     <p>Set your preferred height:</p>
@@ -20,4 +19,11 @@
         <div asp-validation-summary="All" class="text-danger"></div>
         <input class="submitButton blue" type="submit" value="Set Preferred Height" />
     </form>
+    @if ((ViewData["IsAdmin"] is bool isAdmin && isAdmin)
+        && (ViewData["IsClaimsOpen"] is bool isClaimsOpen && isClaimsOpen))
+    {
+        <form asp-page-handler="CloseAdminRetrieval">
+            <input class="submitButton red" type="submit" value="Close Admin Retrieval Button" />
+        </form>
+    }
 </div>

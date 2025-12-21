@@ -1,172 +1,206 @@
 ﻿using MQTTnet;
-using MQTTnet.Formatter;
+using MQTTnet.Protocol;
+using Microsoft.Extensions.Logging;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Humanizer;
 
 namespace asp_net_core.Services
 {
     public class MQTT_Service : IDisposable
     {
         private static readonly string brokerAddress = "mosquitto";
-        private MqttClientFactory mqttFactory = new ();
+        private MqttClientFactory mqttFactory = new();
         private IMqttClient? _mqttClient;
         private readonly ILogger<MQTT_Service> _logger;
 
         // Event fired when desk move message is received
-        public event Action<int>? OnDeskMoveReceived;
+        public event Action<string, int>? OnDeskMoveReceived;
+
+        public event Action<string>? OnPicoConnected;
 
         // Event fired when connection status changes
         public event Action<bool>? OnConnectionStatusChanged;
 
         public bool IsConnected => _mqttClient?.IsConnected ?? false;
+
+        public MQTT_Service(ILogger<MQTT_Service> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task ConnectAsync(string broker, int port, string? username = null, string? password = null)
         {
-            var factory = new MqttClientFactory();
-            _mqttClient = factory.CreateMqttClient();
-
-            var options = new MqttClientOptionsBuilder()
-                .WithTcpServer(broker, port)
-                .WithClientId(Guid.NewGuid().ToString())
-                .WithCleanSession();
-
-            if (!string.IsNullOrEmpty(username))
+            try
             {
-                options.WithCredentials(username, password);
+                _mqttClient = mqttFactory.CreateMqttClient();
+
+                var optionsBuilder = new MqttClientOptionsBuilder()
+                    .WithTcpServer(broker, port)
+                    .WithClientId($"AspNetCore_{Guid.NewGuid()}")
+                    .WithCleanSession()
+                    .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
+                    .WithTimeout(TimeSpan.FromSeconds(10));
+
+                if (!string.IsNullOrEmpty(username))
+                {
+                    optionsBuilder.WithCredentials(username, password);
+                }
+
+                _mqttClient.ConnectedAsync += async e =>
+                {
+                    _logger.LogInformation("Connected to MQTT broker at {Broker}:{Port}", broker, port);
+                    OnConnectionStatusChanged?.Invoke(true);
+                    await SubscribeToTopicsAsync();
+                };
+
+                _mqttClient.DisconnectedAsync += e =>
+                {
+                    _logger.LogWarning("Disconnected from MQTT broker. Reason: {Reason}", e.Reason);
+                    OnConnectionStatusChanged?.Invoke(false);
+                    return Task.CompletedTask;
+                };
+
+                _mqttClient.ApplicationMessageReceivedAsync += HandleMessageAsync;
+
+                var options = optionsBuilder.Build();
+                var result = await _mqttClient.ConnectAsync(options);
+
+                if (result.ResultCode == MqttClientConnectResultCode.Success)
+                {
+                    _logger.LogInformation("MQTT connection successful");
+                }
+                else
+                {
+                    _logger.LogError("MQTT connection failed with result: {ResultCode}", result.ResultCode);
+                    throw new Exception($"MQTT connection failed: {result.ResultCode}");
+                }
             }
-
-            _mqttClient.ConnectedAsync += async e =>
+            catch (Exception ex)
             {
-                _logger.LogInformation("Connected to MQTT broker");
-                OnConnectionStatusChanged?.Invoke(true);
-                await SubscribeToTopicsAsync();
-            };
-
-            _mqttClient.DisconnectedAsync += e =>
-            {
-                _logger.LogWarning("Disconnected from MQTT broker");
-                OnConnectionStatusChanged?.Invoke(false);
-                return Task.CompletedTask;
-            };
-
-            _mqttClient.ApplicationMessageReceivedAsync += HandleMessageAsync;
-
-            await _mqttClient.ConnectAsync(options.Build());
+                _logger.LogError(ex, "Error connecting to MQTT broker at {Broker}:{Port}", broker, port);
+                throw;
+            }
         }
+
         private async Task SubscribeToTopicsAsync()
         {
-            if (_mqttClient == null || !_mqttClient.IsConnected) return;
+            if (_mqttClient == null || !_mqttClient.IsConnected)
+            {
+                _logger.LogWarning("Cannot subscribe: MQTT client not connected");
+                return;
+            }
 
-            // Subscribe to desk move topic
-            await _mqttClient.SubscribeAsync(new MqttTopicFilterBuilder()
-                .WithTopic("online")
-                .WithTopic("tables/+/setHeight")
-                .Build());
+            try
+            {
+                var subscribeOptions = new MqttClientSubscribeOptionsBuilder()
+                    .WithTopicFilter(f => f.WithTopic("/online").WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic("/tables/+/setHeight").WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .Build();
 
-            _logger.LogInformation("Subscribed to desk/move topic");
+                var result = await _mqttClient.SubscribeAsync(subscribeOptions);
+
+                _logger.LogInformation("Subscribed to topics: online, tables/+/setHeight");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error subscribing to topics");
+            }
         }
-
 
         private Task HandleMessageAsync(MqttApplicationMessageReceivedEventArgs e)
         {
             var topic = e.ApplicationMessage.Topic;
             var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 
-            _logger.LogInformation($"Received message on topic '{topic}': {payload}");
-            Console.WriteLine(payload);
+            _logger.LogInformation("Received message on topic '{Topic}': {Payload}", topic, payload);
 
             try
             {
                 var topicParts = topic.Split('/');
-                if (topicParts[0] == "tables" && topicParts[2] == "setHeight")
+                if (topicParts.Length == 4 && topicParts[1] == "tables" && topicParts[3] == "setHeight")
                 {
                     if (int.TryParse(payload, out int height))
                     {
-                        // Fire event with lambda subscribers
-                        OnDeskMoveReceived?.Invoke(height);
+                        _logger.LogInformation("Desk height change received: {Height} for desk {1}", height, topicParts[2]);
+                        OnDeskMoveReceived?.Invoke(topicParts[2], height);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Invalid height value: {Payload}", payload);
                     }
                 }
-                else if (topic == "online")
+                else if (topic == "/online")
                 {
-                    _logger.LogInformation(payload);
+                    _logger.LogInformation("Online message: {Payload}", payload);
+                    OnPicoConnected?.Invoke(payload);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error handling MQTT message");
+                _logger.LogError(ex, "Error handling MQTT message from topic '{Topic}'", topic);
             }
 
             return Task.CompletedTask;
         }
-
 
         public async Task PublishAsync(string topic, string payload)
         {
             if (_mqttClient == null || !_mqttClient.IsConnected)
             {
                 _logger.LogWarning("Cannot publish: MQTT client not connected");
-                return;
+                throw new InvalidOperationException("MQTT client is not connected");
             }
 
-            var message = new MqttApplicationMessageBuilder()
-                .WithTopic(topic)
-                .WithPayload(payload)
-                .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
-                .Build();
+            try
+            {
+                var message = new MqttApplicationMessageBuilder()
+                    .WithTopic(topic)
+                    .WithPayload(payload)
+                    .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+                    .WithRetainFlag(false)
+                    .Build();
 
-            await _mqttClient.PublishAsync(message);
+                await _mqttClient.PublishAsync(message);
+                _logger.LogInformation("Published message to topic '{Topic}': {Payload}", topic, payload);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error publishing to topic '{Topic}'", topic);
+                throw;
+            }
         }
 
-        public MQTT_Service(ILogger<MQTT_Service> logger)
-        {
-            _logger = logger;
-        }
         public async Task Disconnect()
         {
+            if (_mqttClient != null && _mqttClient.IsConnected)
+            {
+                try
+                {
+                    var disconnectOptions = new MqttClientDisconnectOptionsBuilder()
+                        .WithReason(MqttClientDisconnectOptionsReason.NormalDisconnection)
+                        .Build();
 
-            _mqttClient = mqttFactory.CreateMqttClient();
-            var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer(brokerAddress).Build();
-            await _mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-            await _mqttClient.DisconnectAsync(new MqttClientDisconnectOptionsBuilder().WithReason(MqttClientDisconnectOptionsReason.NormalDisconnection).Build());
+                    await _mqttClient.DisconnectAsync(disconnectOptions);
+                    _logger.LogInformation("Disconnected from MQTT broker");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error disconnecting from MQTT broker");
+                }
+            }
         }
-        //public async Task Connect()
-        //{
-
-        //    using var mqttClient = mqttFactory.CreateMqttClient();
-        //    var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer(brokerAddress).Build();
-
-        //    var response = await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-        //    Console.WriteLine("The MQTT client is connected.");
-
-        //    // Send a clean disconnect to the server by calling _DisconnectAsync_. Without this the TCP connection
-        //    // gets dropped and the server will handle this as a non clean disconnect (see MQTT spec for details).
-        //    var mqttClientDisconnectOptions = mqttFactory.CreateClientDisconnectOptionsBuilder().Build();
-
-        //    await mqttClient.DisconnectAsync(mqttClientDisconnectOptions, CancellationToken.None);
-        //}
-        //public async Task Connect_Using_MQTTv5()
-        //{
-        //    /*
-        //     * This sample creates a simple MQTT client and connects to a public broker using MQTTv5.
-        //     *
-        //     * This is a modified version of the sample _Connect_Client_! See other sample for more details.
-        //     */
-
-        //    var mqttFactory = new MqttClientFactory();
-
-        //    using var mqttClient = mqttFactory.CreateMqttClient();
-        //    var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer(brokerAddress).WithProtocolVersion(MqttProtocolVersion.V500).Build();
-
-        //    // In MQTTv5 the response contains much more information.
-        //    var response = await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-        //    Console.WriteLine("The MQTT client is connected.");
-
-        //}
 
         public void Dispose()
         {
-            _mqttClient.Dispose();
+            if (_mqttClient != null)
+            {
+                if (_mqttClient.IsConnected)
+                {
+                    _mqttClient.DisconnectAsync().GetAwaiter().GetResult();
+                }
+                _mqttClient.Dispose();
+            }
         }
     }
 }
