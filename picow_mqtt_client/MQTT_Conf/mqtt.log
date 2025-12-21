@@ -1,0 +1,90 @@
+1764259306: mosquitto version 2.0.22 starting
+1764259306: Config loaded from .\Mqtt.conf.
+1764259306: Opening ipv4 listen socket on port 1883.
+1764259306: mosquitto version 2.0.22 running
+1764259336: New connection from 10.94.57.197:49232 on port 1883.
+1764259336: New client connected from 10.94.57.197:49232 as picoe661 (p2, c1, k60, u'PICOUSER').
+1764259336: Will message specified (1 bytes) (r1, q1).
+1764259336: 	/online
+1764259336: Sending CONNACK to picoe661 (0, 0)
+1764259336: Received SUBSCRIBE from picoe661
+1764259336: 	/led (QoS 1)
+1764259336: picoe661 1 /led
+1764259336: Sending SUBACK to picoe661
+1764259336: Received SUBSCRIBE from picoe661
+1764259336: 	/print (QoS 1)
+1764259336: picoe661 1 /print
+1764259336: Sending SUBACK to picoe661
+1764259336: Received SUBSCRIBE from picoe661
+1764259336: 	/ping (QoS 1)
+1764259336: picoe661 1 /ping
+1764259336: Sending SUBACK to picoe661
+1764259336: Received SUBSCRIBE from picoe661
+1764259336: 	/exit (QoS 1)
+1764259336: picoe661 1 /exit
+1764259336: Sending SUBACK to picoe661
+1764259336: Received PUBLISH from picoe661 (d0, q1, r1, m5, '/online', ... (1 bytes))
+1764259336: Sending PUBACK to picoe661 (m5, rc0)
+1764259347: Received PUBLISH from picoe661 (d0, q1, r0, m7, '/temperature', ... (5 bytes))
+1764259347: Sending PUBACK to picoe661 (m7, rc0)
+1764259377: Received PUBLISH from picoe661 (d0, q1, r0, m8, '/temperature', ... (5 bytes))
+1764259377: Sending PUBACK to picoe661 (m8, rc0)
+1764259387: Received PUBLISH from picoe661 (d0, q1, r0, m9, '/temperature', ... (5 bytes))
+1764259387: Sending PUBACK to picoe661 (m9, rc0)
+1764259397: Received PUBLISH from picoe661 (d0, q1, r0, m10, '/temperature', ... (5 bytes))
+1764259397: Sending PUBACK to picoe661 (m10, rc0)
+1764259423: New connection from 127.0.0.1:51366 on port 1883.
+1764259423: Sending CONNACK to auto-74C1E09A-6671-CEB6-BAEA-ABCE122264A5 (0, 5)
+1764259423: Client auto-74C1E09A-6671-CEB6-BAEA-ABCE122264A5 disconnected, not authorised.
+1764259447: Received PUBLISH from picoe661 (d0, q1, r0, m11, '/temperature', ... (5 bytes))
+1764259447: Sending PUBACK to picoe661 (m11, rc0)
+1764259457: Received PUBLISH from picoe661 (d0, q1, r0, m12, '/temperature', ... (5 bytes))
+1764259457: Sending PUBACK to picoe661 (m12, rc0)
+1764259517: Received PINGREQ from picoe661
+1764259517: Sending PINGRESP to picoe661
+1764259532: New connection from 127.0.0.1:64474 on port 1883.
+1764259532: Sending CONNACK to auto-6C408B9D-B105-2268-E2BD-133F0AAACF72 (0, 5)
+1764259532: Client auto-6C408B9D-B105-2268-E2BD-133F0AAACF72 disconnected, not authorised.
+1764259577: Received PINGREQ from picoe661
+1764259577: Sending PINGRESP to picoe661
+1764338865: mosquitto version 2.0.22 starting
+1764338865: Config loaded from .\Mqtt.conf.
+1764338865: Opening ipv4 listen socket on port 1883.
+1764338865: mosquitto version 2.0.22 running
+1764338952: New connection from 10.94.57.99:54982 on port 1883.
+1764338952: New client connected from 10.94.57.99:54982 as picoe661 (p2, c1, k60, u'PICOUSER').
+1764338952: Will message specified (1 bytes) (r1, q1).
+1764338952: 	/online
+1764338952: Sending CONNACK to picoe661 (0, 0)
+1764338952: Received SUBSCRIBE from picoe661
+1764338952: 	/led (QoS 1)
+1764338952: picoe661 1 /led
+1764338952: Sending SUBACK to picoe661
+1764338952: Received SUBSCRIBE from picoe661
+1764338952: 	/print (QoS 1)
+1764338952: picoe661 1 /print
+1764338952: Sending SUBACK to picoe661
+1764338952: Received SUBSCRIBE from picoe661
+1764338952: 	/ping (QoS 1)
+1764338952: picoe661 1 /ping
+1764338952: Sending SUBACK to picoe661
+1764338952: Received SUBSCRIBE from picoe661
+1764338952: 	/exit (QoS 1)
+1764338952: picoe661 1 /exit
+1764338952: Sending SUBACK to picoe661
+1764338952: Received PUBLISH from picoe661 (d0, q1, r1, m5, '/online', ... (1 bytes))
+1764338952: Sending PUBACK to picoe661 (m5, rc0)
+1764338962: Received PUBLISH from picoe661 (d0, q1, r0, m7, '/temperature', ... (5 bytes))
+1764338962: Sending PUBACK to picoe661 (m7, rc0)
+1764338972: Received PUBLISH from picoe661 (d0, q1, r0, m8, '/temperature', ... (5 bytes))
+1764338972: Sending PUBACK to picoe661 (m8, rc0)
+1764339002: Received PUBLISH from picoe661 (d0, q1, r0, m9, '/temperature', ... (5 bytes))
+1764339002: Sending PUBACK to picoe661 (m9, rc0)
+1764339012: Received PUBLISH from picoe661 (d0, q1, r0, m10, '/temperature', ... (5 bytes))
+1764339012: Sending PUBACK to picoe661 (m10, rc0)
+1764339073: Received PINGREQ from picoe661
+1764339073: Sending PINGRESP to picoe661
+1764339092: Received PUBLISH from picoe661 (d0, q1, r0, m11, '/temperature', ... (5 bytes))
+1764339092: Sending PUBACK to picoe661 (m11, rc0)
+1764339102: Received PUBLISH from picoe661 (d0, q1, r0, m12, '/temperature', ... (5 bytes))
+1764339102: Sending PUBACK to picoe661 (m12, rc0)
