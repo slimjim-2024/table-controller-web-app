@@ -53,12 +53,16 @@ namespace asp_net_core.Areas.Identity.Pages.Account
             return RedirectToPage();
         }
 
+        public bool HasErrors( HeightChangeForm heightChange)
+        {
+            return (heightChange.LowerHeight > heightChange.UpperHeight) || (heightChange.LowerHeight < MIN_HEIGHT || heightChange.UpperHeight > MAX_HEIGHT);
+        }
 
 
         public async Task<IActionResult> OnPostSetPreferredHeightAsync()
         {
-            bool HasErrors = (PreferredHeight.LowerHeight > PreferredHeight.UpperHeight) || (PreferredHeight.LowerHeight < MIN_HEIGHT || PreferredHeight.UpperHeight > MAX_HEIGHT);
-            if (HasErrors)
+
+            if (HasErrors(PreferredHeight))
             {
                 if (PreferredHeight.LowerHeight > PreferredHeight.UpperHeight)
                 {
